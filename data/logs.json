@@ -1,0 +1,93 @@
+[
+  {
+    "timestamp": "2023-10-21T00:25:59.591Z",
+    "method": "GET",
+    "url": "/products/search/jacket",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:26:12.398Z",
+    "method": "GET",
+    "url": "/products",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:26:35.886Z",
+    "method": "GET",
+    "url": "/products",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:27:03.697Z",
+    "method": "GET",
+    "url": "/products",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:48:44.523Z",
+    "method": "GET",
+    "url": "/products",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:07.339Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:09.170Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:10.238Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:11.275Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:12.160Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:13.435Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:14.471Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  },
+  {
+    "timestamp": "2023-10-21T00:49:16.539Z",
+    "method": "GET",
+    "url": "/products/1",
+    "params": {},
+    "ip": "::ffff:127.0.0.1"
+  }
+]
