@@ -13,7 +13,7 @@ const rateLimit = (request, response, next) => {
         requestCountByIP[clientIP] = 1
         setTimeout(() => {
             delete requestCountByIP[clientIP]
-        }, 60)
+        }, 60000)
     }
     next()
 
