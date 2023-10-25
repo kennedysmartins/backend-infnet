@@ -35,7 +35,55 @@ const getProductByName = (productName) => {
 
 }
 
+
+const updateProduct = (productId, updateData) => {
+    return getProducts()
+        .then((productsData) => {
+            const productIndex = productsData.findIndex(
+                product => product.id === parseInt(productId)
+            );
+
+            if (productIndex !== -1) {
+                const existingProduct = productsData[productIndex];
+
+                if (updateData.title) {
+                    existingProduct.title = updateData.title;
+                }
+                if (updateData.price) {
+                    existingProduct.price = updateData.price;
+                }
+                if (updateData.description) {
+                    existingProduct.description = updateData.description;
+                }
+                if (updateData.rating.rate) {
+                    existingProduct.rating.rate = updateData.rating.rate;
+                }
+                if (updateData.rating.rate) {
+                    existingProduct.rating.count = existingProduct.rating.count+1;
+                }
+
+                productsData[productIndex] = existingProduct;
+
+                return fs.writeFile(productsFilePath, JSON.stringify(productsData, null, 2), 'utf-8')
+                    .then(() => {
+                        return existingProduct;
+                    })
+                    .catch((error) => {
+                        throw new Error('Erro ao atualizar o produto: ' + error.message);
+                    });
+            } else {
+                throw new Error('Produto não encontrado');
+            }
+        })
+        .catch((error) => {
+            throw new Error('Erro ao buscar produtos: ' + error.message);
+        });
+};
+
+
 module.exports = {
     getProducts,
     getProductById,
-    getProductByName}
+    updateProduct,
+    getProductByName
+}

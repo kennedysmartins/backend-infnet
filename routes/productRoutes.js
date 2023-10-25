@@ -22,6 +22,22 @@ router.get('/:id', (request, response) => {
     console.log('Rota ProductsID')
 })
 
+router.put('/:id', (request, response) => {
+    const productId = request.params.id 
+    const updateData = request.body;
+
+    productController.updateProduct(productId, updateData)
+    .then(data => {
+        if(data) {
+            response.status(200).json(data)
+        } else {
+            response.status(404).send()
+
+        }
+    })
+    console.log('Rota updateProduct')
+})
+
 router.get('/search/:name', (request, response) => {
     const productName = request.params.name;
     productController.getProductByName(productName)
