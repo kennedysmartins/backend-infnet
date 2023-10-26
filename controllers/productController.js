@@ -54,12 +54,7 @@ const updateProduct = (productId, updateData) => {
         if (updateData.description) {
           existingProduct.description = updateData.description;
         }
-        if (updateData.rating.rate) {
-          existingProduct.rating.rate = updateData.rating.rate;
-        }
-        if (updateData.rating.rate) {
-          existingProduct.rating.count = existingProduct.rating.count + 1;
-        }
+
 
         productsData[productIndex] = existingProduct;
 

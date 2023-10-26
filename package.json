@@ -1,11 +1,10 @@
 {
-  "name": "backend-infnet",
-  "version": "1.0.0",
+  "name": "backend-tomepromo",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":"node --watch --no-warnings ./index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start":"node --watch --no-warnings ./index.js"
   },
   "keywords": [],
   "author": "",
