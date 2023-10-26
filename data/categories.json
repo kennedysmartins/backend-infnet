@@ -1,1 +1,4 @@
-[{ "name": "Eletrônicos" }, { "name": "Vestuário" }]
+[
+  { "id": 1, "name": "Eletrônicos" },
+  { "id": 2, "name": "Vestuário" }
+]
