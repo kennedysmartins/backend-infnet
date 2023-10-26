@@ -49,10 +49,26 @@ router.get('/search/:name', (request, response) => {
 
         }
     })
+    .catch((error) => {
+        response.status(404).json(error.message)
+    })
 
 })
 
 router.post('/', (request, response) => {
+})
+
+router.delete('/:id', (request, response) => {
+    const idRecebido = request.params.id;
+    productController.deleteProducts(idRecebido)
+    .then(data => {
+        if(data) {
+            response.status(200).json(data)
+        }
+    })
+    .catch((error) => {
+        response.status(404).json(error.message)
+    })
 })
 
 module.exports = router;
