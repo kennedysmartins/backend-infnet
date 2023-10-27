@@ -56,6 +56,17 @@ router.get('/search/:name', (request, response) => {
 })
 
 router.post('/', (request, response) => {
+    const newProductData = request.body
+    productController.addProduct(newProductData)
+    .then(product => {
+        if(product) {
+            response.status(201).json(product)
+        } else {
+            response.status(404).send()
+
+        }
+    })
+    console.log('Rota addProduct')
 })
 
 router.delete('/:id', (request, response) => {

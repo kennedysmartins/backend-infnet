@@ -113,7 +113,35 @@ const deleteProducts = (productId) => {
     });
 };
 
+const addProduct = (newProductData) => {
+  return getProducts()
+    .then((productsData) => {
+      let maxProductId = -1;
+      productsData.forEach((product) => {
+        if (product.id > maxProductId) {
+          maxProductId = product.id;
+        }
+      });
+      const newProductId = ++maxProductId;
+      const newProductWithId = Object.assign({id: newProductId}, newProductData)
+
+      productsData.push(newProductWithId)
+
+      return fs.writeFile(productsFilePath, JSON.stringify(productsData, null, 2), 'utf-8')
+      .then(() => {
+        return newProductWithId;
+      })
+      .catch((error) => {
+        throw new Error("Erro ao criar o produto: " + error.message);
+      });
+    })
+    .catch((error) => {
+      throw new Error("Erro ao buscar produtos: " + error.message);
+    });
+};
+
 module.exports = {
+  addProduct,
   getProducts,
   getProductById,
   updateProduct,
