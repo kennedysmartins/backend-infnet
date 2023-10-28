@@ -257,5 +257,621 @@
     "url": "/products/1",
     "params": {},
     "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:20:43.978Z",
+    "method": "PATCH",
+    "url": "/products/19/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:21:14.041Z",
+    "method": "PATCH",
+    "url": "/products/19/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:43:24.030Z",
+    "method": "PATCH",
+    "url": "/products/19/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:44:01.704Z",
+    "method": "PATCH",
+    "url": "/products/19/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:44:22.019Z",
+    "method": "GET",
+    "url": "/products/19/",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:44:27.071Z",
+    "method": "GET",
+    "url": "/products/10/",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:44:34.298Z",
+    "method": "GET",
+    "url": "/products/3/",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:45:18.589Z",
+    "method": "GET",
+    "url": "/products/4",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:45:28.783Z",
+    "method": "PATCH",
+    "url": "/products/4/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:45:40.219Z",
+    "method": "GET",
+    "url": "/products/3",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:45:51.237Z",
+    "method": "PATCH",
+    "url": "/products/3/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:47:20.127Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:48:04.482Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:55:10.417Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:55:15.359Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T19:55:16.978Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:00:05.552Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:42:13.019Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:42:21.643Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:42:22.890Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:42:23.872Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:42:31.695Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:51:56.668Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:53:49.694Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:53:50.733Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:55:13.385Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:55:17.031Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:55:17.823Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:37.012Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:38.589Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:39.473Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:40.327Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:41.469Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:42.322Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:43.056Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:43.846Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:44.752Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:45.726Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:46.542Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:47.352Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:48.250Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:49.052Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:49.963Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:50.721Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:51.535Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:52.322Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:53.055Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:53.826Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:54.585Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:55.310Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:56.072Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:56.786Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:57.589Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:58.446Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:59.212Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:56:59.719Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:00.300Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:00.817Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:01.268Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:01.883Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:02.596Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:03.172Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:03.192Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:03.834Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:17.917Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:19.487Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:20.586Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:21.519Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:22.408Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:23.234Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:24.035Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:24.860Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:25.633Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:26.425Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:27.195Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:27.980Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:28.922Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:29.901Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T20:57:30.676Z",
+    "method": "PATCH",
+    "url": "/products/2/rating",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:03:08.998Z",
+    "method": "PATCH",
+    "url": "/products/3/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:03:12.158Z",
+    "method": "PATCH",
+    "url": "/products/3/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:03:20.164Z",
+    "method": "PATCH",
+    "url": "/products/3/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:03:58.512Z",
+    "method": "PATCH",
+    "url": "/products/3/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:04:03.651Z",
+    "method": "PATCH",
+    "url": "/products/3/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:04:10.133Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:04:11.792Z",
+    "method": "PATCH",
+    "url": "/products/2/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:04:15.866Z",
+    "method": "PATCH",
+    "url": "/products/1/10/discount",
+    "params": {},
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2023-10-28T21:04:32.974Z",
+    "method": "PATCH",
+    "url": "/products/1/50/discount",
+    "params": {},
+    "ip": "::1"
   }
 ]

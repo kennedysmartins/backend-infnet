@@ -82,4 +82,32 @@ router.delete('/:id', (request, response) => {
     })
 })
 
+router.patch('/:id/:percent/discount', (request, response) => {
+    const productId = request.params.id;
+    const productDiscount = request.params.percent;
+    productController.applyDiscount(productId,productDiscount)
+    .then(data => {
+        if(data) {
+            response.status(200).json(data)
+        }
+    })
+    .catch((error) => {
+        response.status(404).json(error.message)
+    })
+})
+
+router.patch('/:id/rating', (request,response) => {
+    const productId = request.params.id;
+    const rating = request.body.rating
+    productController.updateProductRating(productId,rating)
+    .then(data => {
+        if(data) {
+            response.status(200).json(data)
+        }
+    })
+    .catch((error) => {
+        response.status(404).json(error.message)
+    })
+})
+
 module.exports = router;

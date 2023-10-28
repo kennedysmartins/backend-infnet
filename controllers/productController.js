@@ -1,4 +1,5 @@
 const fs = require("fs").promises;
+const { getRandomValues } = require("crypto");
 const path = require("path");
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
@@ -54,7 +55,6 @@ const updateProduct = (productId, updateData) => {
         if (updateData.description) {
           existingProduct.description = updateData.description;
         }
-
 
         productsData[productIndex] = existingProduct;
 
@@ -123,22 +123,108 @@ const addProduct = (newProductData) => {
         }
       });
       const newProductId = ++maxProductId;
-      const newProductWithId = Object.assign({id: newProductId}, newProductData)
+      const newProductWithId = Object.assign(
+        { id: newProductId },
+        newProductData
+      );
 
-      productsData.push(newProductWithId)
+      productsData.push(newProductWithId);
 
-      return fs.writeFile(productsFilePath, JSON.stringify(productsData, null, 2), 'utf-8')
-      .then(() => {
-        return newProductWithId;
-      })
-      .catch((error) => {
-        throw new Error("Erro ao criar o produto: " + error.message);
-      });
+      return fs
+        .writeFile(
+          productsFilePath,
+          JSON.stringify(productsData, null, 2),
+          "utf-8"
+        )
+        .then(() => {
+          return newProductWithId;
+        })
+        .catch((error) => {
+          throw new Error("Erro ao criar o produto: " + error.message);
+        });
     })
     .catch((error) => {
       throw new Error("Erro ao buscar produtos: " + error.message);
     });
 };
+
+const applyDiscount = (productId, discount) => {
+  return getProducts()
+    .then((productsData) => {
+      if (discount >= 0 && discount <= 100) {
+        const productIndex = productsData.findIndex((product) => {
+          return product.id === parseInt(productId);
+        });
+        if (productIndex != -1) {
+          const existingProduct = productsData[productIndex];
+          const discountMultiplier = 1 - discount / 100;
+          existingProduct.price = Number((existingProduct.price * discountMultiplier).toFixed(2));
+          productsData[productIndex] = existingProduct;
+
+          return fs
+            .writeFile(
+              productsFilePath,
+              JSON.stringify(productsData, null, 2),
+              "utf-8"
+            )
+            .then(() => {
+              return existingProduct;
+            })
+            .catch((error) => {
+              throw new Error(
+                "Erro ao aplicar o desconto no produto: " + error.message
+              );
+            });
+        } else {
+          throw new Error("Produto não encontrado");
+        }
+      }
+    })
+    .catch((error) => {
+      throw new Error("Erro ao buscar produtos: " + error.message);
+    });
+};
+
+const updateProductRating = (productId, rating) => {
+  if(rating && rating <=5) {
+    return getProducts()
+      .then((productsData) => {
+        const productIndex = productsData.findIndex((product) => {
+          return product.id === parseInt(productId);
+        });
+        if (productIndex != -1) {
+          const existingProduct = productsData[productIndex];
+          const {rate, count} = existingProduct.rating;
+
+          existingProduct.rating.rate = ((rate * count + rating) / (count + 1)).toFixed(2);
+          existingProduct.rating.count += 1;
+          productsData[productIndex] = existingProduct;
+
+          return fs
+            .writeFile(
+              productsFilePath,
+              JSON.stringify(productsData, null, 2),
+              "utf-8"
+            )
+            .then(() => {
+              return existingProduct;
+            })
+            .catch((error) => {
+              throw new Error(
+                "Erro ao aplicar o desconto no produto: " + error.message
+              );
+            });
+        } else {
+          throw new Error("Produto não encontrado");
+        }
+      })
+      .catch((error) => {
+        throw new Error("Erro ao buscar produtos: " + error.message);
+      });
+  } else {
+    throw new Error("Nota inválida")
+  }
+}
 
 module.exports = {
   addProduct,
@@ -147,4 +233,6 @@ module.exports = {
   updateProduct,
   deleteProducts,
   getProductByName,
+  applyDiscount,
+  updateProductRating,
 };
