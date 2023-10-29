@@ -64,7 +64,7 @@ const sendMessageToWhatsApp = async (req, res) => {
   try {
     const phoneNumber = req.body.phoneNumber; // Número de telefone para o qual enviar a mensagem
     const message = req.body.message; // Mensagem a ser enviada
-    const chatId = phoneNumber + '@c.us';
+    const chatId = phoneNumber;
     const chat = await client.getChatById(chatId);
     if (chat) {
       await chat.sendMessage(message);
