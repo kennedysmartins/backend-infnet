@@ -1,5 +1,7 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const qrcode = require("qrcode-terminal");
+const qrcodeTerminal = require('qrcode-terminal');
+
+let qrCodeValue = null;
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -9,17 +11,18 @@ client.on('loading_screen', (percent, message) => {
   console.log('LOADING SCREEN', percent, message);
 });
 
-client.on("qr", (qr) => {
-  console.log("QR RECEIVED", qr);
-  qrcode.generate(qr, { small: true });
+client.on('qr', (qr) => {
+  console.log("QR RECEBIDO");
+  qrcodeTerminal.generate(qr, { small: true });
+  qrCodeValue = qr;
 });
 
 client.on('authenticated', () => {
-    console.log('AUTHENTICATED');
+  console.log('AUTHENTICATED');
 });
 
 client.on('auth_failure', msg => {
-    console.error('AUTHENTICATION FAILURE', msg);
+  console.error('AUTHENTICATION FAILURE', msg);
 });
 
 client.on("ready", () => {
@@ -28,7 +31,7 @@ client.on("ready", () => {
 
 client.on("message", async (msg) => {
   let chat = await msg.getChat();
- 
+
   if (chat.isGroup && chat.groupMetadata.announce) {
     try {
       const senderId = chat.lastMessage.author.split("@")[0];
@@ -45,7 +48,7 @@ client.on("message", async (msg) => {
         await client.sendMessage(
           owner,
           `O participante ${removedParticipantName} foi removido. 
-                
+
 Mensagem excluída: 
 
 ${deletedMessage}`
@@ -78,6 +81,17 @@ const sendMessageToWhatsApp = async (req, res) => {
   }
 };
 
+const generateQRCode = async () => {
+  return new Promise((resolve, reject) => {
+    if (qrCodeValue) {
+      resolve(qrCodeValue);
+    } else {
+      reject(new Error('O código QR ainda não foi recebido.'));
+    }
+  });
+};
+
 module.exports = {
+  generateQRCode,
   sendMessageToWhatsApp,
 };
