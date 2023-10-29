@@ -69,6 +69,20 @@ router.post('/', (request, response) => {
     console.log('Rota addProduct')
 })
 
+router.post('/extractor', (request, response) => {
+    const newProductData = request.body
+    productController.extractMetadata(newProductData.url)
+    .then(product => {
+        if(product) {
+            response.status(201).json(product)
+        } else {
+            response.status(404).send()
+
+        }
+    })
+    console.log('Rota addProduct')
+})
+
 router.delete('/:id', (request, response) => {
     const idRecebido = request.params.id;
     productController.deleteProducts(idRecebido)
