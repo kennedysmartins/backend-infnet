@@ -70,7 +70,10 @@ const sendMessageToWhatsApp = async (req, res) => {
     const chatId = phoneNumber;
     const chat = await client.getChatById(chatId);
     if (chat) {
-      await chat.sendMessage(message, { linkPreview: { includePreview: true } });
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+      await chat.sendStateTyping();
+      await delay(3000); // Espera 5 segundos
+      await client.sendMessage(chatId, message, { linkPreview: true });
       res.status(200).json({ success: true, message: 'Mensagem enviada com sucesso.' });
     } else {
       res.status(404).json({ success: false, message: 'Não foi possível encontrar o chat.' });
