@@ -70,7 +70,7 @@ const sendMessageToWhatsApp = async (req, res) => {
     const chatId = phoneNumber;
     const chat = await client.getChatById(chatId);
     if (chat) {
-      await chat.sendMessage(message);
+      await chat.sendMessage(message, { linkPreview: { includePreview: true } });
       res.status(200).json({ success: true, message: 'Mensagem enviada com sucesso.' });
     } else {
       res.status(404).json({ success: false, message: 'Não foi possível encontrar o chat.' });
