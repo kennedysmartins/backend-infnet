@@ -1,6 +1,7 @@
 const express = require('express')
 const categoryRoutes = require('./routes/categoryRoutes')
 const productRoutes = require('./routes/productRoutes')
+const serviceRoutes = require('./routes/serviceRoutes')
 const cors = require('cors')
 const redirectMiddleware = require('./middlewares/redirectMiddleware')
 const logMiddleware = require('./middlewares/logMiddleware')
@@ -22,6 +23,7 @@ app.get('/', (request, response) => {
 
 app.use('/categories', categoryRoutes )
 app.use('/products', productRoutes)
+app.use('/services', serviceRoutes)
 
 app.listen(port, () =>{
     console.log('Servidor rodando em http://localhost:'+ port)
