@@ -70,8 +70,8 @@ router.post('/', (request, response) => {
 })
 
 router.post('/extractor', (request, response) => {
-    const newProductData = request.body
-    productController.extractMetadata(newProductData.url)
+    const url = request.body.url
+    productController.extractMetadata(url)
     .then(product => {
         if(product) {
             response.status(201).json(product)
