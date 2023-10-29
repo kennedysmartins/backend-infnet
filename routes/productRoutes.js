@@ -74,13 +74,13 @@ router.post('/extractor', (request, response) => {
     productController.extractMetadata(url)
     .then(product => {
         if(product) {
-            response.status(201).json(product)
+            response.status(200).json(product)
         } else {
             response.status(404).send()
 
         }
     })
-    console.log('Rota addProduct')
+    console.log('Rota extractMetadata')
 })
 
 router.delete('/:id', (request, response) => {
