@@ -1,2 +1,6 @@
-[1030/012201.485:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'.", source:  (0)
-[1030/012201.485:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'bluetooth'.", source:  (0)
+[1030/015852.209:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'.", source:  (0)
+[1030/015852.210:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'bluetooth'.", source:  (0)
+[1030/015855.429:INFO:CONSOLE(0)] "The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.", source:  (0)
+[1030/020017.239:INFO:CONSOLE(2)] "Uncaught (in promise) Error: Comms::sendIq called before startComms", source: https://web.whatsapp.com/ (2)
+[1030/020017.241:INFO:CONSOLE(2)] "Uncaught (in promise) Error: Comms::sendIq called before startComms", source: https://web.whatsapp.com/ (2)
+[1030/020018.330:INFO:CONSOLE(0)] "The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.", source:  (0)

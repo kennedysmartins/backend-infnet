@@ -30,6 +30,7 @@ client.on("ready", () => {
 });
 
 client.on("message", async (msg) => {
+  console.log(msg)
   let chat = await msg.getChat();
 
   if (chat.isGroup && chat.groupMetadata.announce) {
@@ -73,7 +74,7 @@ const sendMessageToWhatsApp = async (req, res) => {
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await chat.sendStateTyping();
       await delay(3000); // Espera 5 segundos
-      await client.sendMessage(chatId, message, { linkPreview: true });
+      await client.sendMessage(chatId, message,  { linkPreview: { includePreview: true } });
       res.status(200).json({ success: true, message: 'Mensagem enviada com sucesso.' });
     } else {
       res.status(404).json({ success: false, message: 'Não foi possível encontrar o chat.' });
