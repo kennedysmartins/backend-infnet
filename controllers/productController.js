@@ -264,8 +264,24 @@ async function extractMetadata(url) {
         result.price = priceValue;
       }
 
-      const imageElement = $("img#landingImage");
-      result.image = imageElement.attr("src");
+      const imageElement = $('div#imgTagWrapperId').find('img');
+const dynamicImageData = imageElement.attr('data-a-dynamic-image');
+
+if (dynamicImageData) {
+  const imageMap = JSON.parse(dynamicImageData);
+  let maxWidth = 0;
+  let imageUrl = '';
+
+  // Iterating over the entries to find the image with the maximum width
+  Object.entries(imageMap).forEach(([url, dimensions]) => {
+    if (dimensions[0] > maxWidth) {
+      maxWidth = dimensions[0];
+      imageUrl = url;
+    }
+  });
+
+  result.image = imageUrl;
+}
 
       const breadcrumbsList = [];
       $("div#wayfinding-breadcrumbs_feature_div ul li").each((i, el) => {
@@ -294,9 +310,9 @@ async function extractMetadata(url) {
       result["price-original"] = $('p[data-testid="price-original"]')
         .text()
         .trim();
-      result.image = $('img[data-testid="image-selected-thumbnail"]').attr(
-        "src"
-      );
+        result.image = $('img[data-testid="image-selected-thumbnail"]').attr(
+          "src"
+        );
       result.description = $('div[data-testid="rich-content-container"]')
         .text()
         .trim();
