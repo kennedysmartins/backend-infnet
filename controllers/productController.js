@@ -2,8 +2,20 @@ const fs = require("fs").promises;
 const path = require("path");
 const cheerio = require("cheerio");
 const unirest = require("unirest");
+const connection = require("../data/connection");
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
+
+const getProductsDB = async () => {
+  try {
+    const query = 'SELECT * FROM products';
+    const [rows] = await connection.query(query);
+
+    return rows;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 const getProducts = async () => {
   try {
@@ -13,6 +25,8 @@ const getProducts = async () => {
     throw new Error(error.message);
   }
 };
+
+
 
 const getProductById = (productId) => {
   return getProducts()
@@ -159,7 +173,9 @@ const applyDiscount = (productId, discount) => {
         if (productIndex != -1) {
           const existingProduct = productsData[productIndex];
           const discountMultiplier = 1 - discount / 100;
-          existingProduct.price = Number((existingProduct.price * discountMultiplier).toFixed(2));
+          existingProduct.price = Number(
+            (existingProduct.price * discountMultiplier).toFixed(2)
+          );
           productsData[productIndex] = existingProduct;
 
           return fs
@@ -187,7 +203,7 @@ const applyDiscount = (productId, discount) => {
 };
 
 const updateProductRating = (productId, rating) => {
-  if(rating && rating <=5) {
+  if (rating && rating <= 5) {
     return getProducts()
       .then((productsData) => {
         const productIndex = productsData.findIndex((product) => {
@@ -195,9 +211,12 @@ const updateProductRating = (productId, rating) => {
         });
         if (productIndex != -1) {
           const existingProduct = productsData[productIndex];
-          const {rate, count} = existingProduct.rating;
+          const { rate, count } = existingProduct.rating;
 
-          existingProduct.rating.rate = ((rate * count + rating) / (count + 1)).toFixed(2);
+          existingProduct.rating.rate = (
+            (rate * count + rating) /
+            (count + 1)
+          ).toFixed(2);
           existingProduct.rating.count += 1;
           productsData[productIndex] = existingProduct;
 
@@ -223,11 +242,9 @@ const updateProductRating = (productId, rating) => {
         throw new Error("Erro ao buscar produtos: " + error.message);
       });
   } else {
-    throw new Error("Nota inválida")
+    throw new Error("Nota inválida");
   }
-}
-
-
+};
 
 async function extractMetadata(url) {
   try {
@@ -240,7 +257,27 @@ async function extractMetadata(url) {
     const $ = cheerio.load(data.body);
     const result = {};
 
-    if (/amzn|amazon/.test(url)) {
+    if (/mercadolivre/.test(url)) {
+      result.site = "Mercado Livre";
+      result.title = $('div.ui-eshop-item__link').find('h3.ui-eshop-item__title').text().trim();
+      result.condition = $('p.ui-eshop-item__installments.ui-eshop-item__installments--interest').text().trim();
+      result.image = $('div.ui-eshop-item__image_container.ui-eshop-item__image_container--row').find('img.ui-eshop-item__image').attr('src');
+      const priceElement = $('span.andes-money-amount.andes-money-amount--cents-superscript').first();
+      const priceText = priceElement.text().trim();
+      const price = priceText.match(/R\$\s*([\d.,]*)/);
+      if (price) {
+        result.price = price[1].replace(/[.,]/g, function (x) {
+          return x === '.' ? '' : '.';
+        });
+      }
+      const oldPrice = $('s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma').text().trim();
+      if (oldPrice) {
+        result['price-original'] = oldPrice;
+      }
+    }
+    
+
+    else if (/amzn|amazon/.test(url)) {
       result.site = "Amazon";
       $("h1#title").each((i, el) => {
         result.title = $(el).text().trim();
@@ -264,24 +301,45 @@ async function extractMetadata(url) {
         result.price = priceValue;
       }
 
-      const imageElement = $('div#imgTagWrapperId').find('img');
-const dynamicImageData = imageElement.attr('data-a-dynamic-image');
+      const priceRecurrence = $("span#sns-base-price")
+        .first()
+        .text()
+        .split("\n")[0]
+        .trim();
+      if (priceRecurrence) {
+        result.priceRecurrence = priceRecurrence;
+      }
 
-if (dynamicImageData) {
-  const imageMap = JSON.parse(dynamicImageData);
-  let maxWidth = 0;
-  let imageUrl = '';
+      const codeElement = $(
+        "th.a-color-secondary.a-size-base.prodDetSectionEntry:contains('ASIN')"
+      )
+        .nextAll("td")
+        .first()
+        .text()
+        .trim();
+      if (codeElement) {
+        const cleanedCode = codeElement.replace(/[^a-zA-Z0-9]/g, "");
+        result.code = cleanedCode;
+      }
 
-  // Iterating over the entries to find the image with the maximum width
-  Object.entries(imageMap).forEach(([url, dimensions]) => {
-    if (dimensions[0] > maxWidth) {
-      maxWidth = dimensions[0];
-      imageUrl = url;
-    }
-  });
+      const imageElement = $("div#imgTagWrapperId").find("img");
+      const dynamicImageData = imageElement.attr("data-a-dynamic-image");
 
-  result.image = imageUrl;
-}
+      if (dynamicImageData) {
+        const imageMap = JSON.parse(dynamicImageData);
+        let maxWidth = 0;
+        let imageUrl = "";
+
+        // Iterating over the entries to find the image with the maximum width
+        Object.entries(imageMap).forEach(([url, dimensions]) => {
+          if (dimensions[0] > maxWidth) {
+            maxWidth = dimensions[0];
+            imageUrl = url;
+          }
+        });
+
+        result.image = imageUrl;
+      }
 
       const breadcrumbsList = [];
       $("div#wayfinding-breadcrumbs_feature_div ul li").each((i, el) => {
@@ -310,38 +368,39 @@ if (dynamicImageData) {
       result["price-original"] = $('p[data-testid="price-original"]')
         .text()
         .trim();
-        result.image = $('img[data-testid="image-selected-thumbnail"]').attr(
-          "src"
-        );
+      result.image = $('img[data-testid="image-selected-thumbnail"]').attr(
+        "src"
+      );
       result.description = $('div[data-testid="rich-content-container"]')
         .text()
         .trim();
       result.condition = $('p[data-testid="installment"]').text().trim();
 
       const breadcrumbsList = [];
-            $("div.sc-dhKdcB.cFngep.sc-sLsrZ.lfArPD a.sc-koXPp.bXTNdB").each((i, el) => {
-                const breadcrumb = $(el).text().trim();
-                if (breadcrumb) {
-                    breadcrumbsList.push(breadcrumb);
-                }
-            });
+      $("div.sc-dhKdcB.cFngep.sc-sLsrZ.lfArPD a.sc-koXPp.bXTNdB").each(
+        (i, el) => {
+          const breadcrumb = $(el).text().trim();
+          if (breadcrumb) {
+            breadcrumbsList.push(breadcrumb);
+          }
+        }
+      );
 
-            let nestedCategories = {};
-            let currentLevel = nestedCategories;
-            breadcrumbsList.forEach((category, index) => {
-                if (index === breadcrumbsList.length - 1) {
-                    currentLevel[category] = result.title;
-                } else {
-                    currentLevel[category] = {};
-                    currentLevel = currentLevel[category];
-                }
-            });
+      let nestedCategories = {};
+      let currentLevel = nestedCategories;
+      breadcrumbsList.forEach((category, index) => {
+        if (index === breadcrumbsList.length - 1) {
+          currentLevel[category] = result.title;
+        } else {
+          currentLevel[category] = {};
+          currentLevel = currentLevel[category];
+        }
+      });
 
-            result.breadcrumbs = nestedCategories;
-
+      result.breadcrumbs = nestedCategories;
     } else {
       throw new Error(
-        'O URL fornecido não contém "amzn" ou "amazon" ou "magazineluiza"'
+        'O URL fornecido não contém "amzn" ou "amazon" ou "magazineluiza" ou "magazinevoce" ou mercadolivre'
       );
     }
 
@@ -352,11 +411,11 @@ if (dynamicImageData) {
   }
 }
 
-
 module.exports = {
   extractMetadata,
   addProduct,
   getProducts,
+  getProductsDB,
   getProductById,
   updateProduct,
   deleteProducts,

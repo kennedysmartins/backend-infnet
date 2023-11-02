@@ -4,8 +4,8 @@ const rateLimit = (request, response, next) => {
     const clientIP = request.IP;
 
     if(requestCountByIP[clientIP]) {
-        if(requestCountByIP[clientIP] > 100) { 
-            return response.status(429).json({error: 'Too many requests, limit 100'})
+        if(requestCountByIP[clientIP] > 1000) { 
+            return response.status(429).json({error: 'Too many requests, limit 1000'})
         }
         requestCountByIP[clientIP]++
 

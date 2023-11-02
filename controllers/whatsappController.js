@@ -1,5 +1,5 @@
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const qrcodeTerminal = require('qrcode-terminal');
+const qrcodeTerminal = require("qrcode-terminal");
 
 let qrCodeValue = null;
 
@@ -7,22 +7,22 @@ const client = new Client({
   authStrategy: new LocalAuth(),
 });
 
-client.on('loading_screen', (percent, message) => {
-  console.log('LOADING SCREEN', percent, message);
+client.on("loading_screen", (percent, message) => {
+  console.log("LOADING SCREEN", percent, message);
 });
 
-client.on('qr', (qr) => {
+client.on("qr", (qr) => {
   console.log("QR RECEBIDO");
   qrcodeTerminal.generate(qr, { small: true });
   qrCodeValue = qr;
 });
 
-client.on('authenticated', () => {
-  console.log('AUTHENTICATED');
+client.on("authenticated", () => {
+  console.log("AUTHENTICATED");
 });
 
-client.on('auth_failure', msg => {
-  console.error('AUTHENTICATION FAILURE', msg);
+client.on("auth_failure", (msg) => {
+  console.error("AUTHENTICATION FAILURE", msg);
 });
 
 client.on("ready", () => {
@@ -30,7 +30,6 @@ client.on("ready", () => {
 });
 
 client.on("message", async (msg) => {
-  console.log(msg)
   let chat = await msg.getChat();
 
   if (chat.isGroup && chat.groupMetadata.announce) {
@@ -64,7 +63,7 @@ ${deletedMessage}`
 client.initialize();
 
 const sendMessageToWhatsApp = async (req, res) => {
-  // Lógica para enviar mensagem no WhatsApp
+  console.log("Enviando mensagem para WhatsApp")
   try {
     const phoneNumber = req.body.phoneNumber; // Número de telefone para o qual enviar a mensagem
     const message = req.body.message; // Mensagem a ser enviada
@@ -74,14 +73,28 @@ const sendMessageToWhatsApp = async (req, res) => {
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await chat.sendStateTyping();
       await delay(3000); // Espera 5 segundos
-      await client.sendMessage(chatId, message,  { linkPreview: { includePreview: true } });
-      res.status(200).json({ success: true, message: 'Mensagem enviada com sucesso.' });
+      await client.sendMessage(chatId, message, {
+        linkPreview: { includePreview: true },
+      });
+      res
+        .status(200)
+        .json({ success: true, message: "Mensagem enviada com sucesso." });
     } else {
-      res.status(404).json({ success: false, message: 'Não foi possível encontrar o chat.' });
+      res
+        .status(404)
+        .json({
+          success: false,
+          message: "Não foi possível encontrar o chat.",
+        });
     }
   } catch (error) {
-    console.error('Erro ao enviar a mensagem:', error);
-    res.status(500).json({ success: false, message: 'Ocorreu um erro ao enviar a mensagem.' });
+    console.error("Erro ao enviar a mensagem:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Ocorreu um erro ao enviar a mensagem.",
+      });
   }
 };
 
@@ -90,7 +103,7 @@ const generateQRCode = async () => {
     if (qrCodeValue) {
       resolve(qrCodeValue);
     } else {
-      reject(new Error('O código QR ainda não foi recebido.'));
+      reject(new Error("O código QR ainda não foi recebido."));
     }
   });
 };
