@@ -2,20 +2,10 @@ const fs = require("fs").promises;
 const path = require("path");
 const cheerio = require("cheerio");
 const unirest = require("unirest");
-const connection = require("../data/connection");
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
 
-const getProductsDB = async () => {
-  try {
-    const query = 'SELECT * FROM products';
-    const [rows] = await connection.query(query);
 
-    return rows;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
 
 const getProducts = async () => {
   try {
@@ -264,17 +254,16 @@ async function extractMetadata(url) {
       result.image = $('div.ui-eshop-item__image_container.ui-eshop-item__image_container--row').find('img.ui-eshop-item__image').attr('src');
       const priceElement = $('span.andes-money-amount.andes-money-amount--cents-superscript').first();
       const priceText = priceElement.text().trim();
-      const price = priceText.match(/R\$\s*([\d.,]*)/);
-      if (price) {
-        result.price = price[1].replace(/[.,]/g, function (x) {
-          return x === '.' ? '' : '.';
-        });
+      const priceMatch = priceText.match(/R\$\s*([\d.,]*)/);
+      if (priceMatch) {
+        result.price = priceMatch[0];
       }
       const oldPrice = $('s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma').text().trim();
       if (oldPrice) {
         result['price-original'] = oldPrice;
       }
     }
+    
     
 
     else if (/amzn|amazon/.test(url)) {
@@ -283,12 +272,10 @@ async function extractMetadata(url) {
         result.title = $(el).text().trim();
       });
 
-      const originalPrice = $('span.a-price[data-a-strike="true"]')
-        .find("span.a-offscreen")
-        .text();
-      if (originalPrice) {
-        result["price-original"] = originalPrice;
-      }
+      const originalPrice = $('span.a-price[data-a-strike="true"] > .a-offscreen').first().text();
+if (originalPrice) {
+    result["price-original"] = originalPrice;
+}
 
       const conditionElement = $("span.best-offer-name");
       result.condition = conditionElement.text().trim();
@@ -415,7 +402,6 @@ module.exports = {
   extractMetadata,
   addProduct,
   getProducts,
-  getProductsDB,
   getProductById,
   updateProduct,
   deleteProducts,

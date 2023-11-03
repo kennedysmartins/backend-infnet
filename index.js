@@ -1,14 +1,13 @@
+const cors = require('cors');
 const express = require('express');
 const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const whatsappRoutes = require('./routes/whatsappRoutes');
-const cors = require('cors');
 const redirectMiddleware = require('./middlewares/redirectMiddleware');
 const logMiddleware = require('./middlewares/logMiddleware');
 const rateLimit = require('./middlewares/rateLimit');
 
-const productController = require('./controllers/productController')
 
 const app = express();
 const port = 4000;
@@ -41,13 +40,3 @@ app.listen(port, () =>{
     console.log('Servidor rodando em http://localhost:'+ port);
 });
 
-// async function fetchData() {
-//     try {
-//       const products = await productController.getProductsDB();
-//       console.log(products);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-  
-//   fetchData();
