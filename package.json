@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch --no-warnings ./index.js"
+    "start": "node --watch --no-warnings ./index.js",
+    "build": "npx prisma generate && npm i"
   },
   "keywords": [],
   "author": "",
