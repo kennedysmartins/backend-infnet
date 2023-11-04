@@ -11,21 +11,23 @@ datasource db {
 }
 
 model Products {
-  id              Int      @id @default(autoincrement())
-  title           String
-  productName     String
-  productCode     String
-  condition       String
-  buyLink         String
-  sponsorLink     String
-  announcement1   String
-  announcement2   String
-  imagePath       String
-  category        String
-  currentPrice    Float
-  originalPrice   Float
-  recurrencePrice Float
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  published       Boolean  @default(false)
+  id               Int      @id @default(autoincrement())
+  title            String
+  catchyText       String?
+  productName      String
+  productCode      String?
+  conditionPayment String?
+  buyLink          String
+  sponsorLink      String?
+  announcement1    String?
+  announcement2    String?
+  imagePath        String
+  category         String?
+  currentPrice     Float
+  originalPrice    Float?
+  recurrencePrice  Float?
+  clicks           Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  published        Boolean  @default(false)
 }

@@ -2,19 +2,23 @@ const fs = require("fs").promises;
 const path = require("path");
 const cheerio = require("cheerio");
 const unirest = require("unirest");
+const { PrismaClient } = require('@prisma/client')
+
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
+const prisma = new PrismaClient()
 
 
 
 const getProducts = async () => {
   try {
-    const data = await fs.readFile(productsFilePath, "utf8");
-    return JSON.parse(data);
+    const products = await prisma.products.findMany();
+    return products;
   } catch (error) {
     throw new Error(error.message);
   }
-};
+ };
+ 
 
 
 
@@ -118,40 +122,17 @@ const deleteProducts = (productId) => {
     });
 };
 
-const addProduct = (newProductData) => {
-  return getProducts()
-    .then((productsData) => {
-      let maxProductId = -1;
-      productsData.forEach((product) => {
-        if (product.id > maxProductId) {
-          maxProductId = product.id;
-        }
-      });
-      const newProductId = ++maxProductId;
-      const newProductWithId = Object.assign(
-        { id: newProductId },
-        newProductData
-      );
-
-      productsData.push(newProductWithId);
-
-      return fs
-        .writeFile(
-          productsFilePath,
-          JSON.stringify(productsData, null, 2),
-          "utf-8"
-        )
-        .then(() => {
-          return newProductWithId;
-        })
-        .catch((error) => {
-          throw new Error("Erro ao criar o produto: " + error.message);
-        });
-    })
-    .catch((error) => {
-      throw new Error("Erro ao buscar produtos: " + error.message);
+const addProduct = async (newProductData) => {
+  await prisma.$connect();
+  try {
+    const newProduct = await prisma.products.create({
+      data: newProductData,
     });
-};
+    return newProduct;
+  } catch (error) {
+    throw new Error("Erro ao criar o produto: " + error.message);
+  }
+ };
 
 const applyDiscount = (productId, discount) => {
   return getProducts()
