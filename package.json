@@ -26,8 +26,8 @@
     "whatsapp-web.js": "git+https://github.com/wictornogueira/whatsapp-web.js.git#fix_linkpreview"
   },
   "engines": {
-    "node": "14.x",
-    "npm": "8.x"
+    "node": "18.x",
+    "npm": "10.x"
   },
   "devDependencies": {
     "prisma": "^5.5.2"
