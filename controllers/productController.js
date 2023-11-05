@@ -59,7 +59,7 @@ const updateProduct = (productId, updateData) => {
           existingProduct.title = updateData.title;
         }
         if (updateData.price) {
-          existingProduct.price = updateData.price;
+          existingProduct.currentPrice = updateData.price;
         }
         if (updateData.description) {
           existingProduct.description = updateData.description;
@@ -144,8 +144,8 @@ const applyDiscount = (productId, discount) => {
         if (productIndex != -1) {
           const existingProduct = productsData[productIndex];
           const discountMultiplier = 1 - discount / 100;
-          existingProduct.price = Number(
-            (existingProduct.price * discountMultiplier).toFixed(2)
+          existingProduct.currentPrice = Number(
+            (existingProduct.currentPrice * discountMultiplier).toFixed(2)
           );
           productsData[productIndex] = existingProduct;
 
@@ -231,13 +231,13 @@ async function extractMetadata(url) {
     if (/mercadolivre/.test(url)) {
       result.site = "Mercado Livre";
       result.title = $('div.ui-eshop-item__link').find('h3.ui-eshop-item__title').text().trim();
-      result.condition = $('p.ui-eshop-item__installments.ui-eshop-item__installments--interest').text().trim();
-      result.image = $('div.ui-eshop-item__image_container.ui-eshop-item__image_container--row').find('img.ui-eshop-item__image').attr('src');
+      result.conditionPayment = $('p.ui-eshop-item__installments.ui-eshop-item__installments--interest').text().trim();
+      result.imagePath= $('div.ui-eshop-item__image_container.ui-eshop-item__image_container--row').find('img.ui-eshop-item__image').attr('src');
       const priceElement = $('span.andes-money-amount.andes-money-amount--cents-superscript').first();
       const priceText = priceElement.text().trim();
       const priceMatch = priceText.match(/R\$\s*([\d.,]*)/);
       if (priceMatch) {
-        result.price = priceMatch[0];
+        result.currentPrice = priceMatch[0];
       }
       const oldPrice = $('s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma').text().trim();
       if (oldPrice) {
@@ -255,27 +255,27 @@ async function extractMetadata(url) {
 
       const originalPrice = $('span.a-price[data-a-strike="true"] > .a-offscreen').first().text();
 if (originalPrice) {
-    result["price-original"] = originalPrice;
+    result.originalPrice = originalPrice;
 }
 
       const conditionElement = $("span.best-offer-name");
-      result.condition = conditionElement.text().trim();
+      result.conditionPayment = conditionElement.text().trim();
 
       const descriptionElement = $("#feature-bullets .a-list-item").first();
       result.description = descriptionElement.text().trim();
 
       const priceValue = $("span.a-price").find("span").first().text();
       if (priceValue) {
-        result.price = priceValue;
+        result.currentPrice = priceValue;
       }
 
-      const priceRecurrence = $("span#sns-base-price")
+      const recurrencePrice = $("span#sns-base-price")
         .first()
         .text()
         .split("\n")[0]
         .trim();
-      if (priceRecurrence) {
-        result.priceRecurrence = priceRecurrence;
+      if (recurrencePrice) {
+        result.recurrencePrice = recurrencePrice;
       }
 
       const codeElement = $(
@@ -287,7 +287,7 @@ if (originalPrice) {
         .trim();
       if (codeElement) {
         const cleanedCode = codeElement.replace(/[^a-zA-Z0-9]/g, "");
-        result.code = cleanedCode;
+        resultproductCode= cleanedCode;
       }
 
       const imageElement = $("div#imgTagWrapperId").find("img");
@@ -306,7 +306,7 @@ if (originalPrice) {
           }
         });
 
-        result.image = imageUrl;
+        result.imagePath= imageUrl;
       }
 
       const breadcrumbsList = [];
@@ -332,17 +332,17 @@ if (originalPrice) {
     } else if (/magazineluiza|magazinevoce/.test(url)) {
       result.site = "Magazine Luiza";
       result.title = $('h1[data-testid="heading-product-title"]').text().trim();
-      result.price = $('p[data-testid="price-value"]').text().trim();
-      result["price-original"] = $('p[data-testid="price-original"]')
+      result.currentPrice = $('p[data-testid="price-value"]').text().trim();
+      result.originalPrice = $('p[data-testid="price-original"]')
         .text()
         .trim();
-      result.image = $('img[data-testid="image-selected-thumbnail"]').attr(
+      result.imagePath= $('img[data-testid="image-selected-thumbnail"]').attr(
         "src"
       );
       result.description = $('div[data-testid="rich-content-container"]')
         .text()
         .trim();
-      result.condition = $('p[data-testid="installment"]').text().trim();
+      result.conditionPayment = $('p[data-testid="installment"]').text().trim();
 
       const breadcrumbsList = [];
       $("div.sc-dhKdcB.cFngep.sc-sLsrZ.lfArPD a.sc-koXPp.bXTNdB").each(
