@@ -173,6 +173,30 @@ const applyDiscount = (productId, discount) => {
     });
 };
 
+const updateProductClick = async (productId) => {
+  await prisma.$connect();
+  try {
+    const product = await prisma.products.findUnique({
+      where: { id: parseInt(productId) },
+    });
+
+    if (!product) {
+      throw new Error('Produto não encontrado');
+    }
+
+    const updatedProduct = await prisma.products.update({
+      where: { id: parseInt(productId) },
+      data: {
+        clicks: product.clicks + 1, // Increment clicks by 1
+      },
+    });
+
+    return updatedProduct;
+  } catch (error) {
+    throw new Error('Erro ao buscar ou atualizar o produto: ' + error.message);
+  }
+};
+
 const updateProductRating = (productId, rating) => {
   if (rating && rating <= 5) {
     return getProducts()
@@ -381,6 +405,7 @@ if (originalPrice) {
 
 module.exports = {
   extractMetadata,
+  updateProductClick,
   addProduct,
   getProducts,
   getProductById,

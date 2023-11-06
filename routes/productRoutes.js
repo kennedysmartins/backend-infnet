@@ -124,4 +124,18 @@ router.patch('/:id/rating', (request,response) => {
     })
 })
 
+router.patch('/:id/click', (request,response) => {
+    const productId = request.params.id;
+    console.log("Adicionando click ao produto com ID", productId)
+    productController.updateProductClick(productId)
+    .then(data => {
+        if(data) {
+            response.status(200).json(data)
+        }
+    })
+    .catch((error) => {
+        response.status(404).json(error.message)
+    })
+})
+
 module.exports = router;
