@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 
 const logMiddleware = (request, response, next) => {
-    console.log('logMiddleware')
     const newLog = {
         timestamp: new Date(),
         method: request.method,

@@ -242,12 +242,14 @@ const updateProductRating = (productId, rating) => {
 };
 
 async function extractMetadata(url) {
+  console.log("Extraindo")
   try {
     const head = {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
     };
     const data = await unirest.get(url).headers(head);
+    console.log(typeof data.body);
 
     const $ = cheerio.load(data.body);
     const result = {};
@@ -311,7 +313,7 @@ if (originalPrice) {
         .trim();
       if (codeElement) {
         const cleanedCode = codeElement.replace(/[^a-zA-Z0-9]/g, "");
-        resultproductCode= cleanedCode;
+        result.productCode= cleanedCode;
       }
 
       const imageElement = $("div#imgTagWrapperId").find("img");
@@ -353,7 +355,7 @@ if (originalPrice) {
       });
 
       result.breadcrumbs = nestedCategories;
-    } else if (/magazineluiza|magazinevoce/.test(url)) {
+    } else if (/magazineluiza|magalu|magazinevoce/.test(url)) {
       result.site = "Magazine Luiza";
       result.title = $('h1[data-testid="heading-product-title"]').text().trim();
       result.currentPrice = $('p[data-testid="price-value"]').text().trim();
@@ -363,6 +365,14 @@ if (originalPrice) {
       result.imagePath= $('img[data-testid="image-selected-thumbnail"]').attr(
         "src"
       );
+
+      const codeElement = $("span.sc-dcJsrY.daMqkh:contains('Código')").text().trim();
+      if (codeElement) {
+        const cleanedCode = codeElement.replace(/Código/g, "").replace(/[^0-9ó]/g, "");
+
+          result.productCode = cleanedCode;
+      }
+
       result.description = $('div[data-testid="rich-content-container"]')
         .text()
         .trim();

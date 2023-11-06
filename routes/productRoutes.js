@@ -5,7 +5,6 @@ const productController = require('../controllers/productController')
 router.get('/', (request, response) => {
     productController.getProducts()
     .then(data => response.json(data))
-    console.log('Rota Products')
 })
 
 router.get('/:id', (request, response) => {
