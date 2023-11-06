@@ -88,38 +88,27 @@ const updateProduct = (productId, updateData) => {
     });
 };
 
-const deleteProducts = (productId) => {
-  return getProducts()
-    .then((productsData) => {
-      const productIndex = productsData.findIndex(
-        (product) => product.id === parseInt(productId)
-      );
-
-      if (productIndex != -1) {
-        const updatedProductsData = productsData.filter(
-          (product) => product.id != parseInt(productId)
-        );
-        const deletedProduct = productsData[productIndex];
-
-        return fs
-          .writeFile(
-            productsFilePath,
-            JSON.stringify(updatedProductsData, null, 2),
-            "utf-8"
-          )
-          .then(() => {
-            return deletedProduct;
-          })
-          .catch((error) => {
-            throw new Error("Erro ao deletar o produto: " + error.message);
-          });
-      } else {
-        throw new Error("Produto não encontrado");
-      }
-    })
-    .catch((error) => {
-      throw new Error("Erro ao buscar produtos: " + error.message);
+const deleteProducts = async (productId) => {
+  await prisma.$connect();
+  try {
+    const product = await prisma.products.findUnique({
+      where: { id: parseInt(productId) },
     });
+
+    if (!product) {
+      throw new Error('Produto não encontrado');
+    }
+
+    const deletedProduct = await prisma.products.delete({
+      where: { id: parseInt(productId) },
+    });
+  console.log("Deletando produto com ID", productId)
+
+
+    return deletedProduct;
+  } catch (error) {
+    throw new Error('Erro ao deletar o produto: ' + error.message);
+  }
 };
 
 const addProduct = async (newProductData) => {
