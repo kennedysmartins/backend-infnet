@@ -81,13 +81,15 @@ const sendMessageToWhatsApp = async (req, res) => {
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await chat.sendStateTyping();
       await delay(3000); // Espera 5 segundos
-      await client.sendMessage(chatId, message, {
+      await chat.sendMessage(message, {
         linkPreview: { includePreview: true },
       });
+      console.log("Mensagem enviada com sucesso")
       res
         .status(200)
         .json({ success: true, message: "Mensagem enviada com sucesso." });
     } else {
+      console.log("Não foi possível encontrar o chat")
       res.status(404).json({
         success: false,
         message: "Não foi possível encontrar o chat.",
