@@ -11,6 +11,7 @@ if(process.env.ENVIRONMENT ==="DEVELOPMENT"){
 }
 
 if (process.env.ENVIRONMENT === "PRODUCTION") {
+  console.log("Servidor de Produção")
   client = new Client({
     authStrategy: new LocalAuth(),
   });
