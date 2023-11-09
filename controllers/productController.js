@@ -236,9 +236,6 @@ async function extractMetadata(url) {
 
     const finalUrl = response.request.res.responseUrl || url;
 
-    console.log(url)
-    console.log(finalUrl)
-
     const $ = cheerio.load(response.data);
     const result = {};
 
