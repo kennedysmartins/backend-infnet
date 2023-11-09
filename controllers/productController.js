@@ -1,14 +1,11 @@
 const fs = require("fs").promises;
 const path = require("path");
 const cheerio = require("cheerio");
-const unirest = require("unirest");
-const { PrismaClient } = require('@prisma/client')
-
+const { PrismaClient } = require("@prisma/client");
+const axios = require('axios');
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
-const prisma = new PrismaClient()
-
-
+const prisma = new PrismaClient();
 
 const getProducts = async () => {
   try {
@@ -17,10 +14,7 @@ const getProducts = async () => {
   } catch (error) {
     throw new Error(error.message);
   }
- };
- 
-
-
+};
 
 const getProductById = (productId) => {
   return getProducts()
@@ -96,18 +90,17 @@ const deleteProducts = async (productId) => {
     });
 
     if (!product) {
-      throw new Error('Produto não encontrado');
+      throw new Error("Produto não encontrado");
     }
 
     const deletedProduct = await prisma.products.delete({
       where: { id: parseInt(productId) },
     });
-  console.log("Deletando produto com ID", productId)
-
+    console.log("Deletando produto com ID", productId);
 
     return deletedProduct;
   } catch (error) {
-    throw new Error('Erro ao deletar o produto: ' + error.message);
+    throw new Error("Erro ao deletar o produto: " + error.message);
   }
 };
 
@@ -121,7 +114,7 @@ const addProduct = async (newProductData) => {
   } catch (error) {
     throw new Error("Erro ao criar o produto: " + error.message);
   }
- };
+};
 
 const applyDiscount = (productId, discount) => {
   return getProducts()
@@ -170,7 +163,7 @@ const updateProductClick = async (productId) => {
     });
 
     if (!product) {
-      throw new Error('Produto não encontrado');
+      throw new Error("Produto não encontrado");
     }
 
     const updatedProduct = await prisma.products.update({
@@ -182,7 +175,7 @@ const updateProductClick = async (productId) => {
 
     return updatedProduct;
   } catch (error) {
-    throw new Error('Erro ao buscar ou atualizar o produto: ' + error.message);
+    throw new Error("Erro ao buscar ou atualizar o produto: " + error.message);
   }
 };
 
@@ -231,47 +224,79 @@ const updateProductRating = (productId, rating) => {
 };
 
 async function extractMetadata(url) {
-  console.log("Extraindo")
+  console.log("Extraindo");
   try {
-    const head = {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-    };
-    const data = await unirest.get(url).headers(head);
-    console.log(typeof data.body);
+    const response = await axios.get(url, {
+      maxRedirects: 5,
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+      },
+    });
 
-    const $ = cheerio.load(data.body);
+    const finalUrl = response.request.res.responseUrl || url;
+
+    console.log(url)
+    console.log(finalUrl)
+
+    const $ = cheerio.load(response.data);
     const result = {};
 
-    if (/mercadolivre/.test(url)) {
+    if (/mercadolivre/.test(finalUrl)) {
       result.site = "Mercado Livre";
-      result.title = $('div.ui-eshop-item__link').find('h3.ui-eshop-item__title').text().trim();
-      result.conditionPayment = $('p.ui-eshop-item__installments.ui-eshop-item__installments--interest').text().trim();
-      result.imagePath= $('div.ui-eshop-item__image_container.ui-eshop-item__image_container--row').find('img.ui-eshop-item__image').attr('src');
-      const priceElement = $('span.andes-money-amount.andes-money-amount--cents-superscript').first();
+      result.title = $("div.ui-eshop-item__link")
+        .find("h3.ui-eshop-item__title")
+        .text()
+        .trim();
+      result.conditionPayment = $(
+        "p.ui-eshop-item__installments.ui-eshop-item__installments--interest"
+      )
+        .text()
+        .trim();
+      result.imagePath = $(
+        "div.ui-eshop-item__image_container.ui-eshop-item__image_container--row"
+      )
+        .find("img.ui-eshop-item__image")
+        .attr("src");
+      const priceElement = $(
+        "span.andes-money-amount.andes-money-amount--cents-superscript"
+      ).first();
       const priceText = priceElement.text().trim();
       const priceMatch = priceText.match(/R\$\s*([\d.,]*)/);
       if (priceMatch) {
         result.currentPrice = priceMatch[0];
       }
-      const oldPrice = $('s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma').text().trim();
+      const oldPrice = $(
+        "s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma"
+      )
+        .text()
+        .trim();
       if (oldPrice) {
-        result['price-original'] = oldPrice;
+        result["price-original"] = oldPrice;
       }
-    }
-    
-    
-
-    else if (/amzn|amazon/.test(url)) {
+    } else if (/amzn|amazon/.test(finalUrl)) {
       result.site = "Amazon";
+
+      const parsedUrl = new URL(finalUrl);
+      parsedUrl.searchParams.set('tag', 'tomepromo08-20');
+      const modifiedUrl = parsedUrl.href;
+      if(modifiedUrl != finalUrl) {
+        result.buyLink = modifiedUrl
+      } 
+
+
       $("h1#title").each((i, el) => {
         result.title = $(el).text().trim();
       });
 
-      const originalPrice = $('span.a-price[data-a-strike="true"] > .a-offscreen').first().text();
-if (originalPrice) {
-    result.originalPrice = originalPrice;
-}
+      const originalPrice = $(
+        'span.a-price[data-a-strike="true"] > .a-offscreen'
+      )
+        .first()
+        .text();
+      if (originalPrice) {
+        result.originalPrice = originalPrice;
+      }
 
       const conditionElement = $("span.best-offer-name");
       result.conditionPayment = conditionElement.text().trim();
@@ -302,7 +327,7 @@ if (originalPrice) {
         .trim();
       if (codeElement) {
         const cleanedCode = codeElement.replace(/[^a-zA-Z0-9]/g, "");
-        result.productCode= cleanedCode;
+        result.productCode = cleanedCode;
       }
 
       const imageElement = $("div#imgTagWrapperId").find("img");
@@ -321,7 +346,7 @@ if (originalPrice) {
           }
         });
 
-        result.imagePath= imageUrl;
+        result.imagePath = imageUrl;
       }
 
       const breadcrumbsList = [];
@@ -344,22 +369,37 @@ if (originalPrice) {
       });
 
       result.breadcrumbs = nestedCategories;
-    } else if (/magazineluiza|magalu|magazinevoce/.test(url)) {
+    } else if (/magazineluiza|magalu|magazinevoce/.test(finalUrl)) {
+
+      let modifiedUrl;
+      
+      if (finalUrl.includes('magazineluiza.com.br')) {
+         modifiedUrl = finalUrl.replace('magazineluiza.com.br', 'magazinevoce.com.br/magazinetomepromo154')
+      } else {
+        modifiedUrl = finalUrl.replace(
+          /https:\/\/www\.magazinevoce\.com\.br\/magazine([^/]+)/,
+        'https://www.magazinevoce.com.br/magazinetomepromo154'
+        );
+      }
+
+      result.buyLink = modifiedUrl || finalUrl;
       result.site = "Magazine Luiza";
       result.title = $('h1[data-testid="heading-product-title"]').text().trim();
       result.currentPrice = $('p[data-testid="price-value"]').text().trim();
-      result.originalPrice = $('p[data-testid="price-original"]')
-        .text()
-        .trim();
-      result.imagePath= $('img[data-testid="image-selected-thumbnail"]').attr(
+      result.originalPrice = $('p[data-testid="price-original"]').text().trim();
+      result.imagePath = $('img[data-testid="image-selected-thumbnail"]').attr(
         "src"
       );
 
-      const codeElement = $("span.sc-dcJsrY.daMqkh:contains('Código')").text().trim();
+      const codeElement = $("span.sc-dcJsrY.daMqkh:contains('Código')")
+        .text()
+        .trim();
       if (codeElement) {
-        const cleanedCode = codeElement.replace(/Código/g, "").replace(/[^0-9ó]/g, "");
+        const cleanedCode = codeElement
+          .replace(/Código/g, "")
+          .replace(/[^0-9ó]/g, "");
 
-          result.productCode = cleanedCode;
+        result.productCode = cleanedCode;
       }
 
       result.description = $('div[data-testid="rich-content-container"]')
