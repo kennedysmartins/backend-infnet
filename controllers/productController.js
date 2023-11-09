@@ -2,7 +2,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const cheerio = require("cheerio");
 const { PrismaClient } = require("@prisma/client");
-const axios = require('axios');
+const axios = require("axios");
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
 const prisma = new PrismaClient();
@@ -223,21 +223,22 @@ const updateProductRating = (productId, rating) => {
   }
 };
 
-async function extractMetadata(url) {
-  console.log("Extraindo");
-  try {
-    const response = await axios.get(url, {
-      maxRedirects: 5,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-      },
-    });
+async function extractMetadata(url, maxRetries = 5) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    console.log("Extraindo");
+    try {
+      const response = await axios.get(url, {
+        maxRedirects: 5,
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+        },
+      });
 
-    const finalUrl = response.request.res.responseUrl || url;
-
-    const $ = cheerio.load(response.data);
-    const result = {};
+      const finalUrl = response.request.res.responseUrl || url;
+      const $ = cheerio.load(response.data);
+      const result = {};
 
     if (/mercadolivre/.test(finalUrl)) {
       result.site = "Mercado Livre";
@@ -275,12 +276,9 @@ async function extractMetadata(url) {
       result.site = "Amazon";
 
       const parsedUrl = new URL(finalUrl);
-      parsedUrl.searchParams.set('tag', 'tomepromo08-20');
+      parsedUrl.searchParams.set("tag", "tomepromo08-20");
       const modifiedUrl = parsedUrl.href;
-      if(modifiedUrl != finalUrl) {
-        result.buyLink = modifiedUrl
-      } 
-
+      result.buyLink = modifiedUrl || finalUrl;
 
       $("h1#title").each((i, el) => {
         result.title = $(el).text().trim();
@@ -367,15 +365,17 @@ async function extractMetadata(url) {
 
       result.breadcrumbs = nestedCategories;
     } else if (/magazineluiza|magalu|magazinevoce/.test(finalUrl)) {
-
       let modifiedUrl;
-      
-      if (finalUrl.includes('magazineluiza.com.br')) {
-         modifiedUrl = finalUrl.replace('magazineluiza.com.br', 'magazinevoce.com.br/magazinetomepromo154')
+
+      if (finalUrl.includes("magazineluiza.com.br")) {
+        modifiedUrl = finalUrl.replace(
+          "magazineluiza.com.br",
+          "magazinevoce.com.br/magazinetomepromo154"
+        );
       } else {
         modifiedUrl = finalUrl.replace(
           /https:\/\/www\.magazinevoce\.com\.br\/magazine([^/]+)/,
-        'https://www.magazinevoce.com.br/magazinetomepromo154'
+          "https://www.magazinevoce.com.br/magazinetomepromo154"
         );
       }
 
@@ -426,17 +426,30 @@ async function extractMetadata(url) {
       });
 
       result.breadcrumbs = nestedCategories;
+
+
     } else {
       throw new Error(
         'O URL fornecido não contém "amzn" ou "amazon" ou "magazineluiza" ou "magazinevoce" ou mercadolivre'
       );
     }
 
+
     return { metadata: result };
-  } catch (error) {
-    console.error("Erro ao extrair metadados:", error);
-    return { error: error.message };
+    } catch (error) {
+      if (error.response && error.response.status === 500) {
+        console.error("Erro 500: Tentando extrair novamente.");
+        retries++;
+        // Aguarde por um curto período antes de tentar novamente
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } else {
+        console.error("Erro ao extrair metadados:", error);
+        return { error: error.message };
+      }
+    }
   }
+  console.error("Número máximo de tentativas excedido. Não foi possível extrair os metadados.");
+  return { error: "Número máximo de tentativas excedido." };
 }
 
 module.exports = {
