@@ -236,9 +236,15 @@ async function extractMetadata(url, maxRetries = 5) {
         },
       });
 
+      if (response.data.includes("errors/500")) {
+        throw new Error("Erro 500 detectado na resposta");
+      }
+
       const finalUrl = response.request.res.responseUrl || url;
       const $ = cheerio.load(response.data);
       const result = {};
+
+      
 
     if (/mercadolivre/.test(finalUrl)) {
       result.site = "Mercado Livre";
@@ -437,19 +443,18 @@ async function extractMetadata(url, maxRetries = 5) {
 
     return { metadata: result };
     } catch (error) {
-      if (error.response && error.response.status === 500) {
-        console.error("Erro 500: Tentando extrair novamente.");
-        retries++;
+      console.error("Erro ao extrair metadados:", error);
+      retries++;
+      if (retries < maxRetries) {
+        console.log("Tentando extrair novamente.");
         // Aguarde por um curto período antes de tentar novamente
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } else {
-        console.error("Erro ao extrair metadados:", error);
-        return { error: error.message };
+        console.error("Número máximo de tentativas excedido. Não foi possível extrair os metadados.");
+        return { error: "Número máximo de tentativas excedido." };
       }
     }
   }
-  console.error("Número máximo de tentativas excedido. Não foi possível extrair os metadados.");
-  return { error: "Número máximo de tentativas excedido." };
 }
 
 module.exports = {
