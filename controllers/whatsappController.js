@@ -83,7 +83,9 @@ const sendMessageToWhatsApp = async (req, res) => {
     const chatId = phoneNumber;
     const chat = await client.getChatById(chatId);
     if (chat) {
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
       await chat.sendStateTyping();
+      await delay(10000); // Espera 5 segundos
       await chat.sendMessage(message, {
         linkPreview: { includePreview: true },
       });
