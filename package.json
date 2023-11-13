@@ -20,11 +20,11 @@
     "html-metadata-parser": "^2.0.4",
     "install": "^0.13.0",
     "mysql2": "^3.6.2",
+    "node-fetch": "^3.3.2",
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0",
     "unirest": "^0.6.0",
-    "node-fetch": "^3.3.2",
-    "whatsapp-web.js": "git+https://github.com/wictornogueira/whatsapp-web.js.git#fix_linkpreview"
+    "whatsapp-web.js": "^1.23.0"
   },
   "engines": {
     "node": "18.x",
