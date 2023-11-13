@@ -38,8 +38,11 @@ if (process.env.ENVIRONMENT === "PRODUCTION") {
     console.log("Client is ready!");
   });
 
+  client.on("message_create", async (msg) => {
+    console.log("Mensagem do Bot!\n", msg);
+  });
+
   client.on("message", async (msg) => {
-    console.log(msg)
     let chat = await msg.getChat();
 
     if (chat.isGroup && chat.groupMetadata.announce) {
