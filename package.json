@@ -23,7 +23,7 @@
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0",
     "unirest": "^0.6.0",
-    "whatsapp-web.js": "git+https://github.com/wictornogueira/whatsapp-web.js.git#fix_linkpreview"
+    "whatsapp-web.js": "git+https://github.com/wictornogueira/whatsapp-web.js#fix_linkpreview"
   },
   "engines": {
     "node": "18.x",
