@@ -122,6 +122,7 @@ const sendMessageToWhatsApp2 = async (req, res) => {
       const response = await fetch(imageUrl);
       const arrayBuffer = await response.arrayBuffer();
       const base64String = Buffer.from(arrayBuffer).toString('base64');
+      console.log(base64String)
       return base64String;
     };
 
@@ -132,7 +133,7 @@ const sendMessageToWhatsApp2 = async (req, res) => {
       await chat.sendStateTyping();
       await chat.sendMessage(message, {
         extra: {
-          mediaData: {
+          ctwaContext: {
             sourceUrl: 'https://PURPSHELL',
             thumbnail: `data:image/jpeg;base64,${thumbnailBase64}`,
             mediaType: 0,
