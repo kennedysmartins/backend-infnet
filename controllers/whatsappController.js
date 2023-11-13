@@ -132,7 +132,7 @@ const sendMessageToWhatsApp2 = async (req, res) => {
       await chat.sendStateTyping();
       await chat.sendMessage(message, {
         extra: {
-          ctwaContext: {
+          mediaData: {
             sourceUrl: 'https://PURPSHELL',
             thumbnail: `data:image/jpeg;base64,${thumbnailBase64}`,
             mediaType: 0,
