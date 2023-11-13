@@ -36,4 +36,10 @@ router.post('/send', (request, response) => {
     .catch((error) => response.status(500).send(error.message));
 });
 
+router.post('/send2', (request, response) => {
+  whatsappController.sendMessageToWhatsApp2(request, response)
+    .then((result) => response.status(201).send(result))
+    .catch((error) => response.status(500).send(error.message));
+});
+
 module.exports = router;

@@ -109,6 +109,55 @@ const sendMessageToWhatsApp = async (req, res) => {
   }
 };
 
+const sendMessageToWhatsApp2 = async (req, res) => {
+  console.log("Enviando mensagem para WhatsApp");
+  try {
+    const phoneNumber = req.body.phoneNumber; // Número de telefone para o qual enviar a mensagem
+    const message = req.body.message; // Mensagem a ser enviada
+    const thumbnailUrl = req.body.thumbnail; // URL da imagem a ser convertida para base64
+    const chatId = phoneNumber;
+
+    // Função para converter a imagem para base64
+    const convertImageToBase64 = async (imageUrl) => {
+      const response = await fetch(imageUrl);
+      const buffer = await response.buffer();
+      return buffer.toString('base64');
+    };
+
+    const thumbnailBase64 = await convertImageToBase64(thumbnailUrl);
+
+    const chat = await client.getChatById(chatId);
+    if (chat) {
+      await chat.sendStateTyping();
+      await chat.sendMessage(message, {
+        extra: {
+          ctwaContext: {
+            sourceUrl: 'https://PURPSHELL',
+            thumbnail: `data:image/jpeg;base64,${thumbnailBase64}`,
+            mediaType: 0,
+            title: 'Any title',
+            description: 'Any description'
+          }
+        }
+      });
+      console.log("Mensagem enviada com sucesso");
+      res.status(200).json({ success: true, message: "Mensagem enviada com sucesso." });
+    } else {
+      console.log("Não foi possível encontrar o chat");
+      res.status(404).json({
+        success: false,
+        message: "Não foi possível encontrar o chat.",
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao enviar a mensagem:", error);
+    res.status(500).json({
+      success: false,
+      message: "Ocorreu um erro ao enviar a mensagem.",
+    });
+  }
+};
+
 const generateQRCode = async () => {
   return new Promise((resolve, reject) => {
     if (qrCodeValue) {
@@ -122,4 +171,5 @@ const generateQRCode = async () => {
 module.exports = {
   generateQRCode,
   sendMessageToWhatsApp,
+  sendMessageToWhatsApp2
 };
