@@ -16,6 +16,25 @@ const getProducts = async () => {
   }
 };
 
+const getProductsPaginated = async (page = 1, pageSize = 5) => {
+  try {
+    if(page === 0) {
+      page = 1
+    }
+    const startIndex = (page - 1) * pageSize;
+    const products = await prisma.products.findMany({
+      skip: startIndex,
+      take: pageSize,
+      orderBy: {
+        id: 'desc',
+      }
+    });
+    return products;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const getProductById = (productId) => {
   return getProducts()
     .then((allProducts) =>
@@ -80,6 +99,62 @@ const updateProduct = (productId, updateData) => {
     .catch((error) => {
       throw new Error("Erro ao buscar produtos: " + error.message);
     });
+};
+
+const createProductGroup = async (groupData) => {
+  await prisma.$connect();
+
+  try {
+    // Cria um novo grupo com os dados fornecidos
+    const newGroup = await prisma.productGroup.create({
+      data: groupData,
+    });
+
+    return newGroup;
+  } catch (error) {
+    throw new Error("Erro ao criar o grupo: " + error.message);
+  }
+};
+
+const addProductToGroup = async (productId, groupId) => {
+  await prisma.$connect();
+
+  try {
+    // Verifica se o produto e o grupo existem
+    const product = await prisma.products.findUnique({
+      where: { id: parseInt(productId) },
+    });
+
+    const group = await prisma.productGroup.findUnique({
+      where: { id: parseInt(groupId) },
+    });
+
+    if (!product || !group) {
+      throw new Error("Produto ou grupo não encontrado");
+    }
+
+    // Adiciona o produto ao grupo na tabela de junção
+    const productGroupMembership = await prisma.ProductGroupAssociation.create({
+      data: {
+        productId: parseInt(productId),
+        groupId: parseInt(groupId),
+      },
+    });
+
+    // Incrementa o contador de clicks do grupo
+    await prisma.productGroup.update({
+      where: { id: parseInt(groupId) },
+      data: {
+        clicks: {
+          increment: 1,
+        },
+      },
+    });
+
+    return productGroupMembership;
+  } catch (error) {
+    throw new Error("Erro ao adicionar o produto ao grupo: " + error.message);
+  }
 };
 
 const deleteProducts = async (productId) => {
@@ -460,7 +535,10 @@ async function extractMetadata(url, maxRetries = 5) {
 module.exports = {
   extractMetadata,
   updateProductClick,
+  getProductsPaginated,
   addProduct,
+  addProductToGroup,
+  createProductGroup,
   getProducts,
   getProductById,
   updateProduct,

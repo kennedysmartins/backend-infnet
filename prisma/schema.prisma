@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -30,4 +27,29 @@ model Products {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   published        Boolean  @default(false)
+
+  groups                  ProductGroup[]            @relation("ProductGroupAssociation")
+  ProductGroupAssociation ProductGroupAssociation[]
+}
+
+model ProductGroup {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  imagePath               String? // Caminho da imagem do grupo
+  description             String? // Descrição do grupo
+  clicks                  Int                       @default(0) // Contador de clicks do grupo
+  published               Boolean                   @default(false)// Campo calculado para a contagem de produtos
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  products                Products[]                @relation("ProductGroupAssociation")
+  ProductGroupAssociation ProductGroupAssociation[]
+}
+
+model ProductGroupAssociation {
+  productId Int
+  groupId   Int
+  product   Products     @relation(fields: [productId], references: [id])
+  group     ProductGroup @relation(fields: [groupId], references: [id])
+
+  @@id([productId, groupId])
 }

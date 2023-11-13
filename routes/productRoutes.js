@@ -7,6 +7,42 @@ router.get('/', (request, response) => {
     .then(data => response.json(data))
 })
 
+router.post('/:productId/add-to-group/:groupId', (request, response) => {
+    const productId = request.params.productId;
+    const groupId = request.params.groupId;
+
+    productController.addProductToGroup(productId, groupId)
+        .then(data => {
+            if (data) {
+                response.status(200).json(data);
+            } else {
+                response.status(404).send();
+            }
+        })
+        .catch(error => {
+            response.status(500).json({ error: error.message });
+        });
+});
+
+router.post('/create-group', (request, response) => {
+    const groupData = request.body;
+
+    productController.createProductGroup(groupData)
+        .then(data => {
+            response.status(201).json(data);
+        })
+        .catch(error => {
+            response.status(500).json({ error: error.message });
+        });
+});
+
+router.get("/paginated", (request, response) => {
+    const page = parseInt(request.query.page) || 1
+    const pageSize = parseInt(request.query.pageSize) || 20
+    productController.getProductsPaginated(page, pageSize)
+    .then(data => response.json(data))
+})
+
 router.get('/:id', (request, response) => {
     const IdRecebido = request.params.id;
     productController.getProductById(IdRecebido)
@@ -82,6 +118,8 @@ router.post('/extractor', (request, response) => {
     console.log('Rota extractMetadata')
 })
 
+
+
 router.delete('/:id', (request, response) => {
     const idRecebido = request.params.id;
     productController.deleteProducts(idRecebido)
@@ -123,6 +161,8 @@ router.patch('/:id/rating', (request,response) => {
     })
 })
 
+
+
 router.patch('/:id/click', (request,response) => {
     const productId = request.params.id;
     console.log("Adicionando click ao produto com ID", productId)
@@ -136,5 +176,7 @@ router.patch('/:id/click', (request,response) => {
         response.status(404).json(error.message)
     })
 })
+
+
 
 module.exports = router;

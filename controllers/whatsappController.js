@@ -39,6 +39,7 @@ if (process.env.ENVIRONMENT === "PRODUCTION") {
   });
 
   client.on("message", async (msg) => {
+    console.log(msg)
     let chat = await msg.getChat();
 
     if (chat.isGroup && chat.groupMetadata.announce) {
