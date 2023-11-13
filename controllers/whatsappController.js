@@ -120,8 +120,9 @@ const sendMessageToWhatsApp2 = async (req, res) => {
     // Função para converter a imagem para base64
     const convertImageToBase64 = async (imageUrl) => {
       const response = await fetch(imageUrl);
-      const buffer = await response.buffer();
-      return buffer.toString('base64');
+      const arrayBuffer = await response.arrayBuffer();
+      const base64String = Buffer.from(arrayBuffer).toString('base64');
+      return base64String;
     };
 
     const thumbnailBase64 = await convertImageToBase64(thumbnailUrl);
