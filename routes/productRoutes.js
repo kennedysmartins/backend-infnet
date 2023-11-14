@@ -25,16 +25,37 @@ router.post('/:productId/add-to-group/:groupId', (request, response) => {
 });
 
 router.post('/create-group', (request, response) => {
-    const groupData = request.body;
+    const { productIds, ...groupData } = request.body;
+    console.log("Criando um grupo de produtos", productIds, groupData)
 
-    productController.createProductGroup(groupData)
-        .then(data => {
-            response.status(201).json(data);
-        })
-        .catch(error => {
-            response.status(500).json({ error: error.message });
-        });
+  
+    productController.createProductGroup(groupData, productIds)
+      .then(data => {
+        response.status(201).json(data);
+      })
+      .catch(error => {
+        response.status(500).json({ error: error.message });
+      });
+  });
+
+router.get('/productGroups', async (request, response) => {
+    try {
+        const productGroups = await productController.getProductGroups();
+        response.status(200).json(productGroups);
+    } catch (error) {
+        response.status(500).json({ error: "Erro ao buscar grupos de produtos: " + error.message });
+    }
 });
+
+router.get('/productGroups/:groupId/products', async (request, response) => {
+    try {
+      const { groupId } = request.params;
+      const productsInGroup = await productController.getProductsByGroup(groupId);
+      response.status(200).json(productsInGroup);
+    } catch (error) {
+      response.status(500).json({ error: error.message });
+    }
+  });
 
 router.get("/paginated", (request, response) => {
     const page = parseInt(request.query.page) || 1

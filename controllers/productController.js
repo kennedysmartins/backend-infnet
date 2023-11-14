@@ -16,6 +16,28 @@ const getProducts = async () => {
   }
 };
 
+const getProductGroups = async () => {
+  try {
+    const productGroups = await prisma.productGroup.findMany();
+    return productGroups;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const getProductsByGroup = async (groupId) => {
+  try {
+    const productsInGroup = await prisma.productGroupAssociation.findMany({
+      where: { groupId: parseInt(groupId) },
+      include: { product: true },
+    });
+
+    return productsInGroup.map((item) => item.product);
+  } catch (error) {
+    throw new Error("Erro ao buscar produtos do grupo: " + error.message);
+  }
+};
+
 const getProductsPaginated = async (page = 1, pageSize = 5) => {
   try {
     if(page === 0) {
@@ -101,18 +123,36 @@ const updateProduct = (productId, updateData) => {
     });
 };
 
-const createProductGroup = async (groupData) => {
+const createProductGroup = async (groupData, productIds) => {
   await prisma.$connect();
 
   try {
-    // Cria um novo grupo com os dados fornecidos
-    const newGroup = await prisma.productGroup.create({
-      data: groupData,
-    });
+    let newGroup;
+
+    if (productIds && productIds.length > 0) {
+      newGroup = await prisma.productGroup.create({
+        data: {
+          ...groupData,
+          ProductGroupAssociation: {
+            create: productIds.map((productId) => ({
+              product: { connect: { id: parseInt(productId) } }
+            })),
+          },
+        },
+      });
+    } else {
+      // Se não houver IDs de produtos, criar apenas o grupo
+      newGroup = await prisma.productGroup.create({
+        data: groupData,
+      });
+    }
 
     return newGroup;
   } catch (error) {
     throw new Error("Erro ao criar o grupo: " + error.message);
+  } finally {
+    // Fecha a conexão após a conclusão
+    await prisma.$disconnect();
   }
 };
 
@@ -534,6 +574,8 @@ async function extractMetadata(url, maxRetries = 5) {
 
 module.exports = {
   extractMetadata,
+  getProductGroups,
+  getProductsByGroup,
   updateProductClick,
   getProductsPaginated,
   addProduct,
