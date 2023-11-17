@@ -1,5 +1,8 @@
 require('dotenv').config();
-const { Client, LocalAuth } = require("whatsapp-web.js");
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const { Client, LocalAuth, MessageMedia  } = require("whatsapp-web.js");
 const qrcodeTerminal = require("qrcode-terminal");
 
 
@@ -38,9 +41,9 @@ if (process.env.ENVIRONMENT === "PRODUCTION") {
     console.log("Client is ready!");
   });
 
-  // client.on("message_create", async (msg) => {
-  //   console.log("Mensagem do Bot!\n", msg);
-  // });
+  client.on("message_create", async (msg) => {
+    // console.log("Mensagem do Bot!\n", msg);
+  });
 
   client.on("message", async (msg) => {
     let chat = await msg.getChat();
@@ -74,6 +77,8 @@ if (process.env.ENVIRONMENT === "PRODUCTION") {
 
   client.initialize();
 }
+
+
 
 const sendMessageToWhatsApp = async (req, res) => {
   console.log("Enviando mensagem para WhatsApp");
@@ -109,56 +114,88 @@ const sendMessageToWhatsApp = async (req, res) => {
   }
 };
 
+const downloadImage = async (url, dest) => {
+  const response = await axios({
+    method: 'GET',
+    url: url,
+    responseType: 'stream',
+  });
+
+  const writer = fs.createWriteStream(dest);
+
+  return new Promise((resolve, reject) => {
+    response.data.pipe(writer);
+    let error = null;
+    writer.on('error', (err) => {
+      error = err;
+      writer.close();
+      reject(err);
+    });
+    writer.on('close', () => {
+      if (!error) {
+        resolve();
+      }
+    });
+  });
+};
+
+
 const sendMessageToWhatsApp2 = async (req, res) => {
-  console.log("Enviando mensagem para WhatsApp");
   try {
-    const phoneNumber = req.body.phoneNumber; // Número de telefone para o qual enviar a mensagem
-    const message = req.body.message; // Mensagem a ser enviada
-    const thumbnailUrl = req.body.thumbnail; // URL da imagem a ser convertida para base64
+    const phoneNumber = req.body.phoneNumber;
+    const message = req.body.message;
+    const buyLink = req.body.buyLink;
+    const thumbnail = req.body.thumbnail;
     const chatId = phoneNumber;
 
-    // Função para converter a imagem para base64
-    const convertImageToBase64 = async (imageUrl) => {
-      const response = await fetch(imageUrl);
-      const arrayBuffer = await response.arrayBuffer();
-      const base64String = Buffer.from(arrayBuffer).toString('base64');
-      console.log(base64String)
-      return base64String;
-    };
+    console.log('Downloading and saving thumbnail...');
+    // Download and save the thumbnail to a temporary file
+    const tempImagePath = path.join(__dirname, 'temp_thumbnail.jpg');
+    await downloadImage(thumbnail, tempImagePath);
+    console.log('Thumbnail downloaded and saved successfully.');
 
-    const thumbnailBase64 = await convertImageToBase64(thumbnailUrl);
+    console.log('Converting the saved image to base64...');
+    // Convert the saved image to base64
+    const yourBase64Image = fs.readFileSync(tempImagePath, { encoding: 'base64' });
+    console.log('Image converted to base64 successfully.');
 
+    // Remove the temporary image file
+    // fs.unlinkSync(tempImagePath);
+
+    console.log('Getting chat by ID...');
     const chat = await client.getChatById(chatId);
     if (chat) {
-      await chat.sendStateTyping();
-      await chat.sendMessage(message, {
+      console.log('Sending message...');
+      await chat.sendMessage(message, {  linkPreview: true,
         extra: {
           ctwaContext: {
-            sourceUrl: 'https://PURPSHELL',
-            thumbnail: `data:image/jpeg;base64,${thumbnailBase64}`,
+            sourceUrl: buyLink,
+            thumbnail: yourBase64Image,
             mediaType: 0,
-            title: 'Any title',
-            description: 'Any description'
-          }
-        }
+            title: 'test',
+            description: 'description',
+            // isSuspiciousLink: null,
+          },
+        },
       });
-      console.log("Mensagem enviada com sucesso");
-      res.status(200).json({ success: true, message: "Mensagem enviada com sucesso." });
+      console.log('Message sent successfully.');
+      res.status(200).json({ success: true, message: 'Success.' });
     } else {
-      console.log("Não foi possível encontrar o chat");
+      console.log('Unable to find chat.');
       res.status(404).json({
         success: false,
-        message: "Não foi possível encontrar o chat.",
+        message: 'Unable to find chat.',
       });
     }
   } catch (error) {
-    console.error("Erro ao enviar a mensagem:", error);
+    console.error('Error occurred:', error);
     res.status(500).json({
       success: false,
-      message: "Ocorreu um erro ao enviar a mensagem.",
+      message: 'An error occurred while sending the message.',
     });
   }
 };
+
 
 const generateQRCode = async () => {
   return new Promise((resolve, reject) => {

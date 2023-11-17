@@ -11,19 +11,21 @@ model Products {
   id               Int      @id @default(autoincrement())
   title            String
   catchyText       String?
-  productName      String
+  productName      String   @db.VarChar(255)
   productCode      String?
   conditionPayment String?
-  buyLink          String
+  buyLink          String   @db.VarChar(255)
   sponsorLink      String?
   announcement1    String?
   announcement2    String?
-  imagePath        String
+  imagePath        String   @db.VarChar(255)
   category         String?
   currentPrice     Float
   originalPrice    Float?
   recurrencePrice  Float?
   clicks           Int      @default(0)
+  website          String?
+  cupom            String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   published        Boolean  @default(false)
@@ -38,7 +40,7 @@ model ProductGroup {
   imagePath               String? // Caminho da imagem do grupo
   description             String? // Descrição do grupo
   clicks                  Int                       @default(0) // Contador de clicks do grupo
-  published               Boolean                   @default(false)// Campo calculado para a contagem de produtos
+  published               Boolean                   @default(false) // Campo calculado para a contagem de produtos
   createdAt               DateTime                  @default(now())
   updatedAt               DateTime                  @updatedAt
   products                Products[]                @relation("ProductGroupAssociation")

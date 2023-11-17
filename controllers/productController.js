@@ -420,10 +420,23 @@ async function extractMetadata(url, maxRetries = 5) {
       const descriptionElement = $("#feature-bullets .a-list-item").first();
       result.description = descriptionElement.text().trim();
 
-      const priceValue = $("span.a-price").find("span").first().text();
-      if (priceValue) {
-        result.currentPrice = priceValue;
-      }
+      const priceElement = $('span.a-offscreen').filter((i, el) => {
+        const text = $(el).text().trim();
+        return text.startsWith("R$");
+    });
+    
+    const priceValues = priceElement.map((i, el) => {
+        return $(el).text().trim();
+    }).get();
+    
+    const firstPrice = priceValues.length > 0 ? priceValues[0] : null;
+    
+    if (firstPrice) {
+        result.currentPrice = firstPrice;
+    }
+    
+    console.log('Price Element HTML:', priceElement.html());
+    
 
       const recurrencePrice = $("span#sns-base-price")
         .first()
