@@ -362,7 +362,7 @@ async function extractMetadata(url, maxRetries = 5) {
       
 
     if (/mercadolivre/.test(finalUrl)) {
-      result.site = "Mercado Livre";
+      result.website = "Mercado Livre";
       result.title = $("div.ui-eshop-item__link")
         .find("h3.ui-eshop-item__title")
         .text()
@@ -394,7 +394,7 @@ async function extractMetadata(url, maxRetries = 5) {
         result["price-original"] = oldPrice;
       }
     } else if (/amzn|amazon/.test(finalUrl)) {
-      result.site = "Amazon";
+      result.website = "Amazon";
 
       const parsedUrl = new URL(finalUrl);
       parsedUrl.searchParams.set("tag", "tomepromo00-20");
@@ -514,7 +514,7 @@ async function extractMetadata(url, maxRetries = 5) {
       }
 
       result.buyLink = modifiedUrl || finalUrl;
-      result.site = "Magazine Luiza";
+      result.website = "Magazine Luiza";
       result.title = $('h1[data-testid="heading-product-title"]').text().trim();
       result.currentPrice = $('p[data-testid="price-value"]').text().trim();
       result.originalPrice = $('p[data-testid="price-original"]').text().trim();

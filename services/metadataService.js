@@ -13,7 +13,7 @@ async function extractMetadata(url) {
     const result = {};
 
     if (/amzn|amazon/.test(url)) {
-      result.site = "Amazon";
+      result.website = "Amazon";
       $("h1#title").each((i, el) => {
         result.title = $(el).text().trim();
       });
@@ -60,7 +60,7 @@ async function extractMetadata(url) {
 
       result.breadcrumbs = nestedCategories;
     } else if (/magazineluiza|magazinevoce/.test(url)) {
-      result.site = "Magazine Luiza";
+      result.website = "Magazine Luiza";
       result.title = $('h1[data-testid="heading-product-title"]').text().trim();
       result.price = $('p[data-testid="price-value"]').text().trim();
       result["price-original"] = $('p[data-testid="price-original"]')
