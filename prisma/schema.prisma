@@ -18,7 +18,7 @@ model Products {
   sponsorLink      String?
   announcement1    String?
   announcement2    String?
-  imagePath        String   @db.VarChar(255)
+  imagePath        String   @db.VarChar(999)
   category         String?
   currentPrice     Float
   originalPrice    Float?
