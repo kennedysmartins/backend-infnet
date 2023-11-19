@@ -574,6 +574,8 @@ async function extractMetadata(url, maxRetries = 5) {
         );
       }
 
+      if (result.website != "Mercado Livre") {
+
       const userAgent =
           "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
@@ -592,6 +594,8 @@ async function extractMetadata(url, maxRetries = 5) {
               }
             }
           })
+
+        }
           
 
       return { metadata: result };
