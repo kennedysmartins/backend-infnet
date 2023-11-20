@@ -1,31 +1,4 @@
-[1107/213735.371:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'.", source:  (0)
-[1107/213735.372:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'bluetooth'.", source:  (0)
-[1107/213735.430:ERROR:backend_impl.cc(1041)] Critical error found -8
-[1107/213735.430:ERROR:entry_impl.cc(1076)] No file for c1030340
-[1107/213735.434:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.455:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.456:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.459:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.460:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.469:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.469:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.471:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.471:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.484:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.484:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.492:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.492:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.494:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.494:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.511:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.511:WARNING:storage_block-inl.h(147)] Failed data load.
-[1107/213735.531:ERROR:entry_impl.cc(999)] Failed to save user data
-[1107/213735.532:ERROR:entry_impl.cc(999)] Failed to save user data
-[1107/213735.542:ERROR:entry_impl.cc(999)] Failed to save user data
-[1107/213735.561:ERROR:entry_impl.cc(999)] Failed to save user data
-[1107/213816.230:INFO:CONSOLE(7)] "Another connection wants to delete database 'wawc_db_enc'. Closing db now to resume the delete request.", source: https://web.whatsapp.com/vendor1~app.4802d7adf05a55e9c1dc.js (7)
-[1107/213816.233:INFO:CONSOLE(21)] "Another connection wants to delete database 'wawc_db_enc'. Closing db now to resume the delete request.", source: https://web.whatsapp.com/WAWebWorker.0b65b4a87226df1361e9.worker.js (21)
-[1107/213820.084:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'.", source:  (0)
-[1107/213820.084:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'bluetooth'.", source:  (0)
-[1107/213823.397:INFO:CONSOLE(21)] "Another connection wants to delete database 'wawc'. Closing db now to resume the delete request.", source: https://web.whatsapp.com/serviceworker.js (21)
-[1107/213823.398:INFO:CONSOLE(21)] "Another connection wants to delete database 'wawc'. Closing db now to resume the delete request.", source: https://web.whatsapp.com/serviceworker.js (21)
+[1120/115049.225:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'ambient-light-sensor'.", source:  (0)
+[1120/115049.225:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'bluetooth'.", source:  (0)
+[1120/115049.226:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'local-fonts'.", source:  (0)
+[1120/115049.226:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'window-management'.", source:  (0)

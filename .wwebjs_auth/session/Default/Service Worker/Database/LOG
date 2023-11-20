@@ -1,3 +1,2 @@
-2023/11/07-21:37:30.747 76d4 Reusing MANIFEST C:\Users\Killer\www\backend-tomepromo\.wwebjs_auth\session\Default\Service Worker\Database/MANIFEST-000001
-2023/11/07-21:37:30.801 76d4 Recovering log #3
-2023/11/07-21:37:30.803 76d4 Reusing old log C:\Users\Killer\www\backend-tomepromo\.wwebjs_auth\session\Default\Service Worker\Database/000003.log 
+2023/11/20-11:50:54.479 5f40 Creating DB C:\Users\Killer\www\backend-tomepromo\.wwebjs_auth\session\Default\Service Worker\Database since it was missing.
+2023/11/20-11:50:54.524 5f40 Reusing MANIFEST C:\Users\Killer\www\backend-tomepromo\.wwebjs_auth\session\Default\Service Worker\Database/MANIFEST-000001
