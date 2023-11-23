@@ -340,7 +340,8 @@ const updateProductRating = (productId, rating) => {
 };
 
 const formatPrice = (currentPrice) => {
-  if (currentPrice) {
+  if (typeof currentPrice === 'string') {
+    console.log("CurrentPrice",currentPrice)
     let priceWithoutSymbol = currentPrice.replace(/^R\$\s?/, "");
 
 
@@ -849,8 +850,14 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         result.title = $('h1[data-testid="heading-product-title"]')
           .text()
           .trim();
-        result.currentPrice = formatPrice($('p[data-testid="price-value"]').text().trim());
-        result.originalPrice = formatPrice($('p[data-testid="price-original"]'))
+        let currentPriceMagalu = $('p[data-testid="price-value"]').text().trim();
+
+        result.currentPrice = formatPrice(currentPriceMagalu)
+
+        let originalPriceMagalu = $('p[data-testid="price-original"]')
+
+        result.originalPrice =  formatPrice(originalPriceMagalu)
+
           .text()
           .trim();
         result.imagePath = $(
