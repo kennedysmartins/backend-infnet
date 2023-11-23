@@ -709,6 +709,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         if (oldPrice) {
           result.originalPrice = formatPrice(oldPrice);
         }
+
+        result.buyLink = modifiedUrl || finalUrl;
+
+
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
 
@@ -838,6 +842,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           );
         }
       }
+      console.log(modifiedUrl)
 
         result.buyLink = modifiedUrl || finalUrl;
         result.website = "Magazine Luiza";
