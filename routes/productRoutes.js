@@ -127,7 +127,25 @@ router.post('/', (request, response) => {
 
 router.post('/extractor', (request, response) => {
     const url = request.body.url
+    const amazon = request.body.amazon
+    const magazine = request.body.magazine
     productController.extractMetadata(url)
+    .then(product => {
+        if(product) {
+            response.status(200).json(product)
+        } else {
+            response.status(404).send()
+
+        }
+    })
+    console.log('Rota extractMetadata')
+})
+
+router.post('/extractor2', (request, response) => {
+    const url = request.body.url
+    const amazon = request.body.amazon
+    const magazine = request.body.magazine
+    productController.extractMetadata2(url, amazon, magazine)
     .then(product => {
         if(product) {
             response.status(200).json(product)

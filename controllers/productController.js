@@ -571,9 +571,321 @@ async function extractMetadata(url, maxRetries = 5) {
 
         result.breadcrumbs = nestedCategories;
       } else {
-        throw new Error(
+        console.log(
           'O URL fornecido não contém "amzn" ou "amazon" ou "magazineluiza" ou "magazinevoce" ou mercadolivre'
         );
+        await ogs({
+          url: url,
+          fetchOptions: { headers: { "user-agent": userAgent } },
+        }).then((data) => {
+          const { error, result: ogsResult } = data;
+          if (!error && ogsResult) {
+            result.title = ogsResult.title
+            result.productName = ogsResult.title
+            // Adicione os campos do OGS aos resultados
+            ogsResult.ogImage = ogsResult.ogImage || [];
+            if (ogsResult.ogImage.length > 0) {
+              // Use apenas a primeira imagem do OGS
+              result.imagePath = ogsResult.ogImage[0].url;
+            }
+          }
+        });
+      }
+
+      if (result.website != "Mercado Livre") {
+        const userAgent =
+          "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+
+        await ogs({
+          url: url,
+          fetchOptions: { headers: { "user-agent": userAgent } },
+        }).then((data) => {
+          const { error, result: ogsResult } = data;
+          if (!error && ogsResult) {
+            // Adicione os campos do OGS aos resultados
+            ogsResult.ogImage = ogsResult.ogImage || [];
+            if (ogsResult.ogImage.length > 0) {
+              // Use apenas a primeira imagem do OGS
+              result.imagePath = ogsResult.ogImage[0].url;
+            }
+          }
+        });
+      }
+
+      return { metadata: result };
+    } catch (error) {
+      console.error("Erro ao extrair metadados:", error);
+      retries++;
+      if (retries < maxRetries) {
+        console.log("Tentando extrair novamente.");
+        // Aguarde por um curto período antes de tentar novamente
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } else {
+        console.error(
+          "Número máximo de tentativas excedido. Não foi possível extrair os metadados."
+        );
+        return { error: "Número máximo de tentativas excedido." };
+      }
+    }
+  }
+}
+
+async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    console.log("Extraindo");
+    try {
+      const response = await axios.get(url, {
+        maxRedirects: 5,
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+        },
+      });
+
+      if (response.data.includes("errors/500")) {
+        throw new Error("Erro 500 detectado na resposta");
+      }
+
+      const finalUrl = response.request.res.responseUrl || url;
+      const $ = cheerio.load(response.data);
+      const result = {};
+
+      if (/mercadolivre/.test(finalUrl)) {
+        result.website = "Mercado Livre";
+        result.title = $("div.ui-eshop-item__link")
+          .find("h3.ui-eshop-item__title")
+          .text()
+          .trim();
+        result.conditionPayment = $(
+          "p.ui-eshop-item__installments.ui-eshop-item__installments--interest"
+        )
+          .text()
+          .trim();
+        result.imagePath = $(
+          "div.ui-eshop-item__image_container.ui-eshop-item__image_container--row"
+        )
+          .find("img.ui-eshop-item__image")
+          .attr("src");
+        const priceElement = $(
+          "span.andes-money-amount.andes-money-amount--cents-superscript"
+        ).first();
+        const priceText = priceElement.text().trim();
+        const priceMatch = priceText.match(/R\$\s*([\d.,]*)/);
+        if (priceMatch) {
+          result.currentPrice = priceMatch[0];
+        }
+        const oldPrice = $(
+          "s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma"
+        )
+          .text()
+          .trim();
+        if (oldPrice) {
+          result["price-original"] = oldPrice;
+        }
+      } else if (/amzn|amazon/.test(finalUrl)) {
+        result.website = "Amazon";
+
+        if(amazon){
+
+        const parsedUrl = new URL(finalUrl);
+        parsedUrl.searchParams.set("tag", amazon);
+        const modifiedUrl = parsedUrl.href;
+        result.buyLink = modifiedUrl || finalUrl;
+      }
+
+        $("h1#title").each((i, el) => {
+          result.title = $(el).text().trim();
+        });
+
+        const originalPrice = $(
+          'span.a-price[data-a-strike="true"] > .a-offscreen'
+        )
+          .first()
+          .text();
+        if (originalPrice) {
+          result.originalPrice = originalPrice;
+        }
+
+        const conditionElement = $("span.best-offer-name");
+        result.conditionPayment = conditionElement.text().trim();
+
+        const descriptionElement = $("#feature-bullets .a-list-item").first();
+        result.description = descriptionElement.text().trim();
+
+        const priceElement = $("span.a-offscreen").filter((i, el) => {
+          const text = $(el).text().trim();
+          return text.startsWith("R$");
+        });
+
+        const priceValues = priceElement
+          .map((i, el) => {
+            return $(el).text().trim();
+          })
+          .get();
+
+        const firstPrice = priceValues.length > 0 ? priceValues[0] : null;
+
+        if (firstPrice) {
+          result.currentPrice = firstPrice;
+        }
+
+        console.log("Price Element HTML:", priceElement.html());
+
+        const recurrencePriceText = $("span#sns-base-price")
+        .first()
+        .text()
+        .trim();
+      
+      // Fazer split por "R$" e pegar o segundo elemento (o primeiro valor após "R$")
+      const recurrencePriceArray = recurrencePriceText.split("R$");
+      const firstRecurrencePrice = recurrencePriceArray.length > 1 ? `R$${recurrencePriceArray[1]}` : null;
+      
+      if (firstRecurrencePrice) {
+        result.recurrencePrice = firstRecurrencePrice;
+      }
+
+        const codeElement = $(
+          "th.a-color-secondary.a-size-base.prodDetSectionEntry:contains('ASIN')"
+        )
+          .nextAll("td")
+          .first()
+          .text()
+          .trim();
+        if (codeElement) {
+          const cleanedCode = codeElement.replace(/[^a-zA-Z0-9]/g, "");
+          result.productCode = cleanedCode;
+        }
+
+        const imageElement = $("div#imgTagWrapperId").find("img");
+        const dynamicImageData = imageElement.attr("data-a-dynamic-image");
+
+        if (dynamicImageData) {
+          const imageMap = JSON.parse(dynamicImageData);
+          let maxWidth = 0;
+          let imageUrl = "";
+
+          // Iterating over the entries to find the image with the maximum width
+          Object.entries(imageMap).forEach(([url, dimensions]) => {
+            if (dimensions[0] > maxWidth) {
+              maxWidth = dimensions[0];
+              imageUrl = url;
+            }
+          });
+
+          result.imagePath = imageUrl;
+        }
+
+        const breadcrumbsList = [];
+        $("div#wayfinding-breadcrumbs_feature_div ul li").each((i, el) => {
+          const breadcrumb = $(el).find("a").text().trim();
+          if (breadcrumb) {
+            breadcrumbsList.push(breadcrumb);
+          }
+        });
+
+        let nestedCategories = {};
+        let currentLevel = nestedCategories;
+        breadcrumbsList.forEach((category, index) => {
+          if (index === breadcrumbsList.length - 1) {
+            currentLevel[category] = result.title;
+          } else {
+            currentLevel[category] = {};
+            currentLevel = currentLevel[category];
+          }
+        });
+
+        result.breadcrumbs = nestedCategories;
+      } else if (/magazineluiza|magalu|magazinevoce/.test(finalUrl)) {
+        let modifiedUrl;
+
+        if(magazine) {
+        if (finalUrl.includes("magazineluiza.com.br")) {
+          modifiedUrl = finalUrl.replace(
+            "magazineluiza.com.br",
+            `magazinevoce.com.br/${magazine}`
+          );
+        } else {
+          modifiedUrl = finalUrl.replace(
+            /https:\/\/www\.magazinevoce\.com\.br\/magazine([^/]+)/,
+            `https://www.magazinevoce.com.br/${magazine}`
+          );
+        }
+      }
+
+        result.buyLink = modifiedUrl || finalUrl;
+        result.website = "Magazine Luiza";
+        result.title = $('h1[data-testid="heading-product-title"]')
+          .text()
+          .trim();
+        result.currentPrice = $('p[data-testid="price-value"]').text().trim();
+        result.originalPrice = $('p[data-testid="price-original"]')
+          .text()
+          .trim();
+        result.imagePath = $(
+          'img[data-testid="image-selected-thumbnail"]'
+        ).attr("src");
+
+        const codeElement = $("span.sc-dcJsrY.daMqkh:contains('Código')")
+          .text()
+          .trim();
+        if (codeElement) {
+          const cleanedCode = codeElement
+            .replace(/Código/g, "")
+            .replace(/[^0-9ó]/g, "");
+
+          result.productCode = cleanedCode;
+        }
+
+        result.description = $('div[data-testid="rich-content-container"]')
+          .text()
+          .trim();
+        result.conditionPayment = $('p[data-testid="installment"]')
+          .text()
+          .trim();
+
+        const breadcrumbsList = [];
+        $("div.sc-dhKdcB.cFngep.sc-sLsrZ.lfArPD a.sc-koXPp.bXTNdB").each(
+          (i, el) => {
+            const breadcrumb = $(el).text().trim();
+            if (breadcrumb) {
+              breadcrumbsList.push(breadcrumb);
+            }
+          }
+        );
+
+        let nestedCategories = {};
+        let currentLevel = nestedCategories;
+        breadcrumbsList.forEach((category, index) => {
+          if (index === breadcrumbsList.length - 1) {
+            currentLevel[category] = result.title;
+          } else {
+            currentLevel[category] = {};
+            currentLevel = currentLevel[category];
+          }
+        });
+
+        result.breadcrumbs = nestedCategories;
+      } else {
+        console.log(
+          'O URL fornecido não contém "amzn" ou "amazon" ou "magazineluiza" ou "magazinevoce" ou mercadolivre'
+        );
+        await ogs({
+          url: url,
+          fetchOptions: { headers: { "user-agent": userAgent } },
+        }).then((data) => {
+          const { error, result: ogsResult } = data;
+          if (!error && ogsResult) {
+            result.title = ogsResult.title
+            result.productName = ogsResult.title
+            // Adicione os campos do OGS aos resultados
+            ogsResult.ogImage = ogsResult.ogImage || [];
+            if (ogsResult.ogImage.length > 0) {
+              // Use apenas a primeira imagem do OGS
+              result.imagePath = ogsResult.ogImage[0].url;
+            }
+          }
+        });
       }
 
       if (result.website != "Mercado Livre") {
@@ -616,6 +928,7 @@ async function extractMetadata(url, maxRetries = 5) {
 
 module.exports = {
   extractMetadata,
+  extractMetadata2,
   getProductGroups,
   getProductsByGroup,
   updateProductClick,
