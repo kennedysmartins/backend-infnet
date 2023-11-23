@@ -417,6 +417,7 @@ async function extractMetadata(url, maxRetries = 5) {
         if (oldPrice) {
           result["price-original"] = oldPrice;
         }
+        result.buyLink = modifiedUrl || finalUrl;
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
 
