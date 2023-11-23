@@ -339,6 +339,31 @@ const updateProductRating = (productId, rating) => {
   }
 };
 
+const formatPrice = (currentPrice) => {
+  if (currentPrice) {
+    let priceWithoutSymbol = currentPrice.replace(/^R\$\s?/, "");
+
+
+    if (
+      priceWithoutSymbol.includes(",") &&
+      priceWithoutSymbol.includes(".")
+    ) {
+      priceWithoutSymbol = priceWithoutSymbol.replace(/\./g, "");
+      priceWithoutSymbol = priceWithoutSymbol.replace(/\,/g, ".");
+    } else {
+      priceWithoutSymbol = priceWithoutSymbol.replace(/\,/g, ".");
+    }
+
+    if (priceWithoutSymbol.split(".")[1].length === 3) {
+      priceWithoutSymbol = priceWithoutSymbol.replace(/\./g, "");
+    }
+    parseFloat(priceWithoutSymbol);
+
+    return priceWithoutSymbol;
+  }
+  return currentPrice;
+};
+
 async function extractMetadata(url, maxRetries = 5) {
   let retries = 0;
   while (retries < maxRetries) {
@@ -673,7 +698,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         const priceText = priceElement.text().trim();
         const priceMatch = priceText.match(/R\$\s*([\d.,]*)/);
         if (priceMatch) {
-          result.currentPrice = priceMatch[0];
+          result.currentPrice = formatPrice(priceMatch[0]);
         }
         const oldPrice = $(
           "s.andes-money-amount.andes-money-amount-combo__previous-value.andes-money-amount--previous.andes-money-amount--cents-comma"
@@ -681,7 +706,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           .text()
           .trim();
         if (oldPrice) {
-          result["price-original"] = oldPrice;
+          result.originalPrice = formatPrice(oldPrice);
         }
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
@@ -704,7 +729,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           .first()
           .text();
         if (originalPrice) {
-          result.originalPrice = originalPrice;
+          result.originalPrice = formatPrice(originalPrice);
         }
 
         const conditionElement = $("span.best-offer-name");
@@ -727,7 +752,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         const firstPrice = priceValues.length > 0 ? priceValues[0] : null;
 
         if (firstPrice) {
-          result.currentPrice = firstPrice;
+          result.currentPrice = formatPrice(firstPrice);
         }
 
         console.log("Price Element HTML:", priceElement.html());
@@ -742,7 +767,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
       const firstRecurrencePrice = recurrencePriceArray.length > 1 ? `R$${recurrencePriceArray[1]}` : null;
       
       if (firstRecurrencePrice) {
-        result.recurrencePrice = firstRecurrencePrice;
+        result.recurrencePrice = formatPrice(firstRecurrencePrice);
       }
 
         const codeElement = $(
@@ -818,8 +843,8 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         result.title = $('h1[data-testid="heading-product-title"]')
           .text()
           .trim();
-        result.currentPrice = $('p[data-testid="price-value"]').text().trim();
-        result.originalPrice = $('p[data-testid="price-original"]')
+        result.currentPrice = formatPrice($('p[data-testid="price-value"]').text().trim());
+        result.originalPrice = formatPrice($('p[data-testid="price-original"]'))
           .text()
           .trim();
         result.imagePath = $(
