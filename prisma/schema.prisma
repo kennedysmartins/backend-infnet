@@ -9,9 +9,9 @@ datasource db {
 
 model Products {
   id               Int      @id @default(autoincrement())
-  title            String
+  title            String?
   catchyText       String?
-  productName      String   @db.VarChar(255)
+  productName      String?   @db.VarChar(255)
   productCode      String?
   conditionPayment String?
   buyLink          String   @db.VarChar(255)
@@ -20,7 +20,7 @@ model Products {
   announcement2    String?
   imagePath        String   @db.VarChar(999)
   category         String?
-  currentPrice     Float
+  currentPrice     Float?
   originalPrice    Float?
   recurrencePrice  Float?
   clicks           Int      @default(0)

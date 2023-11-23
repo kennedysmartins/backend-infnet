@@ -47,7 +47,7 @@ if (process.env.ENVIRONMENT === "PRODUCTION") {
 
   client.on("message", async (msg) => {
     let chat = await msg.getChat();
-
+    // console.log(msg)
     if (chat.isGroup && chat.groupMetadata.announce) {
       try {
         const senderId = chat.lastMessage.author.split("@")[0];
