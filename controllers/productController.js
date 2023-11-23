@@ -439,23 +439,24 @@ async function extractMetadata(url, maxRetries = 5) {
         console.log("Price Element HTML:", priceElement.html());
 
         const recurrencePriceText = $("span#sns-base-price")
-          .first()
-          .text()
-          .split("\n")[0]
-          .trim();
+  .first()
+  .text()
+  .split("\n")[0]
+  .trim();
 
-        // Remover caracteres não numéricos, exceto o R$
-        const cleanedRecurrencePrice = recurrencePriceText
-          .replace(/[^\dR$,.]/g, "")
-          .replace(/R\$/, " R$")
-          .trim();
+// Remover caracteres não numéricos, exceto o R$
+const cleanedRecurrencePrice = recurrencePriceText
+  .replace(/[^\dR$,.]/g, '')
+  .replace(/R\$/, ' R$')
+  .trim();
 
-        // Extrair apenas o primeiro valor com R$
-        const recurrencePrice = cleanedRecurrencePrice.split(" ")[0];
+// Extrair apenas o primeiro valor com R$
+const firstRecurrencePrice = cleanedRecurrencePrice.split(' ')[0];
 
-        if (recurrencePrice) {
-          result.recurrencePrice = recurrencePrice;
-        }
+if (firstRecurrencePrice) {
+  result.recurrencePrice = firstRecurrencePrice;
+}
+
         const codeElement = $(
           "th.a-color-secondary.a-size-base.prodDetSectionEntry:contains('ASIN')"
         )
