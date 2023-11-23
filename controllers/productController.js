@@ -438,15 +438,24 @@ async function extractMetadata(url, maxRetries = 5) {
 
         console.log("Price Element HTML:", priceElement.html());
 
-        const recurrencePrice = $("span#sns-base-price")
+        const recurrencePriceText = $("span#sns-base-price")
           .first()
           .text()
           .split("\n")[0]
           .trim();
+
+        // Remover caracteres não numéricos, exceto o R$
+        const cleanedRecurrencePrice = recurrencePriceText
+          .replace(/[^\dR$,.]/g, "")
+          .replace(/R\$/, " R$")
+          .trim();
+
+        // Extrair apenas o primeiro valor com R$
+        const recurrencePrice = cleanedRecurrencePrice.split(" ")[0];
+
         if (recurrencePrice) {
           result.recurrencePrice = recurrencePrice;
         }
-
         const codeElement = $(
           "th.a-color-secondary.a-size-base.prodDetSectionEntry:contains('ASIN')"
         )
@@ -477,8 +486,6 @@ async function extractMetadata(url, maxRetries = 5) {
 
           result.imagePath = imageUrl;
         }
-
-        
 
         const breadcrumbsList = [];
         $("div#wayfinding-breadcrumbs_feature_div ul li").each((i, el) => {
@@ -575,28 +582,24 @@ async function extractMetadata(url, maxRetries = 5) {
       }
 
       if (result.website != "Mercado Livre") {
-
-      const userAgent =
+        const userAgent =
           "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
         await ogs({
           url: url,
           fetchOptions: { headers: { "user-agent": userAgent } },
-        })
-          .then((data) => {
-            const { error, result: ogsResult } = data;
-            if (!error && ogsResult) {
-              // Adicione os campos do OGS aos resultados
-              ogsResult.ogImage = ogsResult.ogImage || [];
-              if (ogsResult.ogImage.length > 0) {
-                // Use apenas a primeira imagem do OGS
-                result.imagePath = ogsResult.ogImage[0].url;
-              }
+        }).then((data) => {
+          const { error, result: ogsResult } = data;
+          if (!error && ogsResult) {
+            // Adicione os campos do OGS aos resultados
+            ogsResult.ogImage = ogsResult.ogImage || [];
+            if (ogsResult.ogImage.length > 0) {
+              // Use apenas a primeira imagem do OGS
+              result.imagePath = ogsResult.ogImage[0].url;
             }
-          })
-
-        }
-          
+          }
+        });
+      }
 
       return { metadata: result };
     } catch (error) {
