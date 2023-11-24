@@ -341,7 +341,7 @@ const updateProductRating = (productId, rating) => {
 
 const formatPrice = (currentPrice) => {
   if (typeof currentPrice === 'string') {
-    console.log("CurrentPrice",currentPrice)
+    console.log("formatando valor",currentPrice)
     let priceWithoutSymbol = currentPrice.replace(/^R\$\s?/, "");
 
 
@@ -355,7 +355,7 @@ const formatPrice = (currentPrice) => {
       priceWithoutSymbol = priceWithoutSymbol.replace(/\,/g, ".");
     }
 
-    if (priceWithoutSymbol.split(".")[1].length === 3) {
+    if (priceWithoutSymbol.split(".").length === 2 && priceWithoutSymbol.split(".")[1].length === 3) {
       priceWithoutSymbol = priceWithoutSymbol.replace(/\./g, "");
     }
     parseFloat(priceWithoutSymbol);
@@ -710,9 +710,9 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           .text()
           .trim();
         if (oldPrice) {
-          result.originalPrice = formatPrice(oldPrice);
+          result["price-original"] = formatPrice(oldPrice);
+          
         }
-
         const modifiedUrl = finalUrl
         result.buyLink = modifiedUrl || finalUrl;
 
@@ -857,12 +857,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
 
         result.currentPrice = formatPrice(currentPriceMagalu)
 
-        let originalPriceMagalu = $('p[data-testid="price-original"]')
+        let originalPriceMagalu = $('p[data-testid="price-original"]').text().trim();
 
         result.originalPrice =  formatPrice(originalPriceMagalu)
 
-          .text()
-          .trim();
         result.imagePath = $(
           'img[data-testid="image-selected-thumbnail"]'
         ).attr("src");
