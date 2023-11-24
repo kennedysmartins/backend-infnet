@@ -425,7 +425,7 @@ async function extractMetadata(url, maxRetries = 5) {
         result.website = "Amazon";
 
         const parsedUrl = new URL(finalUrl);
-        parsedUrl.searchParams.set("tag", "tomepromo00-20");
+        parsedUrl.searchParams.set("tag", "tomepromo0f-20");
         const modifiedUrl = parsedUrl.href;
         result.buyLink = modifiedUrl || finalUrl;
 
