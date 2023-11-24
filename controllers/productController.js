@@ -420,7 +420,7 @@ async function extractMetadata(url, maxRetries = 5) {
           
         }
         const modifiedUrl = finalUrl
-        result.buyLink = modifiedUrl || finalUrl;
+        result.buyLink = url;
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
 
@@ -714,7 +714,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           
         }
         const modifiedUrl = finalUrl
-        result.buyLink = modifiedUrl || finalUrl;
+        result.buyLink = url;
 
 
       } else if (/amzn|amazon/.test(finalUrl)) {
