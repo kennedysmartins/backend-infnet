@@ -445,6 +445,13 @@ async function extractMetadata(url, maxRetries = 5) {
         const conditionElement = $("span.best-offer-name");
         result.conditionPayment = conditionElement.text().trim();
 
+        const oneTimePaymentElement = $("#oneTimePaymentPrice_feature_div span.a-size-base.a-color-secondary");
+        if (oneTimePaymentElement.length > 0) {
+          const oneTimePaymentText = oneTimePaymentElement.text().trim();
+          result.conditionPayment = result.conditionPayment ? `${oneTimePaymentText} ${result.conditionPayment}` : oneTimePaymentText;
+      }
+      
+
         const descriptionElement = $("#feature-bullets .a-list-item").first();
         result.description = descriptionElement.text().trim();
 
@@ -743,6 +750,14 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
 
         const conditionElement = $("span.best-offer-name");
         result.conditionPayment = conditionElement.text().trim();
+
+        const oneTimePaymentElement = $("#oneTimePaymentPrice_feature_div span.a-size-base.a-color-secondary");
+        if (oneTimePaymentElement.length > 0) {
+          const oneTimePaymentText = oneTimePaymentElement.text().trim();
+          result.conditionPayment = result.conditionPayment ? `${oneTimePaymentText} ${result.conditionPayment}` : oneTimePaymentText;
+      }
+      
+
 
         const descriptionElement = $("#feature-bullets .a-list-item").first();
         result.description = descriptionElement.text().trim();
