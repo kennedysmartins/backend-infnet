@@ -75,7 +75,6 @@ router.get('/:id', (request, response) => {
 
         }
     })
-    console.log('Rota ProductsID')
 })
 
 router.put('/:id', (request, response) => {

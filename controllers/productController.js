@@ -341,7 +341,6 @@ const updateProductRating = (productId, rating) => {
 
 const formatPrice = (currentPrice) => {
   if (typeof currentPrice === 'string') {
-    console.log("formatando valor",currentPrice)
     let priceWithoutSymbol = currentPrice.replace(/^R\$\s?/, "");
 
 
@@ -471,8 +470,6 @@ async function extractMetadata(url, maxRetries = 5) {
         if (firstPrice) {
           result.currentPrice = firstPrice;
         }
-
-        console.log("Price Element HTML:", priceElement.html());
 
         const recurrencePriceText = $("span#sns-base-price")
         .first()
@@ -779,7 +776,6 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           result.currentPrice = formatPrice(firstPrice);
         }
 
-        console.log("Price Element HTML:", priceElement.html());
 
         const recurrencePriceText = $("span#sns-base-price")
         .first()
@@ -861,7 +857,6 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           );
         }
       }
-      console.log(modifiedUrl)
 
         result.buyLink = modifiedUrl || finalUrl;
         result.website = "Magazine Luiza";
