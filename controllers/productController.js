@@ -4,7 +4,6 @@ const cheerio = require("cheerio");
 const { PrismaClient } = require("@prisma/client");
 const axios = require("axios");
 const ogs = require("open-graph-scraper");
-const { Readable } = require("stream");
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
 const prisma = new PrismaClient();
@@ -626,22 +625,8 @@ async function extractMetadata(url, maxRetries = 5) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
 
-              // Converte a imagem para Blob
-              const imageResponse = await fetch(result.imagePath);
-              
+   
 
-              if (!imageResponse.ok) {
-                console.error("Erro ao obter a imagem:", imageResponse.status);
-                return { error: "Erro ao obter a imagem" };
-              }
-
-              try {
-                const imageBlob = await imageResponse.blob();
-                result.blob = imageBlob;
-              } catch (blobError) {
-                console.error("Erro ao criar o Blob:", blobError);
-                return { error: "Erro ao criar o Blob" };
-              }
             }
           }
         });
@@ -663,22 +648,7 @@ async function extractMetadata(url, maxRetries = 5) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
 
-              // Converte a imagem para Blob
-              const imageResponse = await fetch(result.imagePath);
               
-
-              if (!imageResponse.ok) {
-                console.error("Erro ao obter a imagem:", imageResponse.status);
-                return { error: "Erro ao obter a imagem" };
-              }
-
-              try {
-                const imageBlob = await imageResponse.blob();
-                result.blob = imageBlob;
-              } catch (blobError) {
-                console.error("Erro ao criar o Blob:", blobError);
-                return { error: "Erro ao criar o Blob" };
-              }
             }
           }
         });
@@ -977,23 +947,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
 
-              // Converte a imagem para Blob
-              const imageResponse = await fetch(result.imagePath);
-              
-
-              if (!imageResponse.ok) {
-                console.error("Erro ao obter a imagem:", imageResponse.status);
-                return { error: "Erro ao obter a imagem" };
-              }
-
-              try {
-                const imageBlob = await imageResponse.blob();
-                result.blob = imageBlob;
-              } catch (blobError) {
-                console.error("Erro ao criar o Blob:", blobError);
-                return { error: "Erro ao criar o Blob" };
-              }
-
+            
               
             }
           }
@@ -1016,22 +970,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
 
-              // Converte a imagem para Blob
-              const imageResponse = await fetch(result.imagePath);
               
-
-              if (!imageResponse.ok) {
-                console.error("Erro ao obter a imagem:", imageResponse.status);
-                return { error: "Erro ao obter a imagem" };
-              }
-
-              try {
-                const imageBlob = await imageResponse.blob();
-                result.blob = imageBlob;
-              } catch (blobError) {
-                console.error("Erro ao criar o Blob:", blobError);
-                return { error: "Erro ao criar o Blob" };
-              }
 
             }
           }
