@@ -4,6 +4,7 @@ const cheerio = require("cheerio");
 const { PrismaClient } = require("@prisma/client");
 const axios = require("axios");
 const ogs = require("open-graph-scraper");
+const { Readable } = require("stream");
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
 const prisma = new PrismaClient();
@@ -340,21 +341,20 @@ const updateProductRating = (productId, rating) => {
 };
 
 const formatPrice = (currentPrice) => {
-  if (typeof currentPrice === 'string') {
+  if (typeof currentPrice === "string") {
     let priceWithoutSymbol = currentPrice.replace(/^R\$\s?/, "");
 
-
-    if (
-      priceWithoutSymbol.includes(",") &&
-      priceWithoutSymbol.includes(".")
-    ) {
+    if (priceWithoutSymbol.includes(",") && priceWithoutSymbol.includes(".")) {
       priceWithoutSymbol = priceWithoutSymbol.replace(/\./g, "");
       priceWithoutSymbol = priceWithoutSymbol.replace(/\,/g, ".");
     } else {
       priceWithoutSymbol = priceWithoutSymbol.replace(/\,/g, ".");
     }
 
-    if (priceWithoutSymbol.split(".").length === 2 && priceWithoutSymbol.split(".")[1].length === 3) {
+    if (
+      priceWithoutSymbol.split(".").length === 2 &&
+      priceWithoutSymbol.split(".")[1].length === 3
+    ) {
       priceWithoutSymbol = priceWithoutSymbol.replace(/\./g, "");
     }
     parseFloat(priceWithoutSymbol);
@@ -416,9 +416,8 @@ async function extractMetadata(url, maxRetries = 5) {
           .trim();
         if (oldPrice) {
           result["price-original"] = oldPrice;
-          
         }
-        const modifiedUrl = finalUrl
+        const modifiedUrl = finalUrl;
         result.buyLink = url;
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
@@ -444,12 +443,15 @@ async function extractMetadata(url, maxRetries = 5) {
         const conditionElement = $("span.best-offer-name");
         result.conditionPayment = conditionElement.text().trim();
 
-        const oneTimePaymentElement = $("#oneTimePaymentPrice_feature_div span.a-size-base.a-color-secondary");
+        const oneTimePaymentElement = $(
+          "#oneTimePaymentPrice_feature_div span.a-size-base.a-color-secondary"
+        );
         if (oneTimePaymentElement.length > 0) {
           const oneTimePaymentText = oneTimePaymentElement.text().trim();
-          result.conditionPayment = result.conditionPayment ? `${oneTimePaymentText} ${result.conditionPayment}` : oneTimePaymentText;
-      }
-      
+          result.conditionPayment = result.conditionPayment
+            ? `${oneTimePaymentText} ${result.conditionPayment}`
+            : oneTimePaymentText;
+        }
 
         const descriptionElement = $("#feature-bullets .a-list-item").first();
         result.description = descriptionElement.text().trim();
@@ -472,17 +474,20 @@ async function extractMetadata(url, maxRetries = 5) {
         }
 
         const recurrencePriceText = $("span#sns-base-price")
-        .first()
-        .text()
-        .trim();
-      
-      // Fazer split por "R$" e pegar o segundo elemento (o primeiro valor após "R$")
-      const recurrencePriceArray = recurrencePriceText.split("R$");
-      const firstRecurrencePrice = recurrencePriceArray.length > 1 ? `R$${recurrencePriceArray[1]}` : null;
-      
-      if (firstRecurrencePrice) {
-        result.recurrencePrice = firstRecurrencePrice;
-      }
+          .first()
+          .text()
+          .trim();
+
+        // Fazer split por "R$" e pegar o segundo elemento (o primeiro valor após "R$")
+        const recurrencePriceArray = recurrencePriceText.split("R$");
+        const firstRecurrencePrice =
+          recurrencePriceArray.length > 1
+            ? `R$${recurrencePriceArray[1]}`
+            : null;
+
+        if (firstRecurrencePrice) {
+          result.recurrencePrice = firstRecurrencePrice;
+        }
 
         const codeElement = $(
           "th.a-color-secondary.a-size-base.prodDetSectionEntry:contains('ASIN')"
@@ -610,16 +615,33 @@ async function extractMetadata(url, maxRetries = 5) {
         await ogs({
           url: url,
           fetchOptions: { headers: { "user-agent": userAgent } },
-        }).then((data) => {
+        }).then(async (data) => {
           const { error, result: ogsResult } = data;
           if (!error && ogsResult) {
-            result.title = ogsResult.title
-            result.productName = ogsResult.title
+            result.title = ogsResult.title;
+            result.productName = ogsResult.title;
             // Adicione os campos do OGS aos resultados
             ogsResult.ogImage = ogsResult.ogImage || [];
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
+
+              // Converte a imagem para Blob
+              const imageResponse = await fetch(result.imagePath);
+              
+
+              if (!imageResponse.ok) {
+                console.error("Erro ao obter a imagem:", imageResponse.status);
+                return { error: "Erro ao obter a imagem" };
+              }
+
+              try {
+                const imageBlob = await imageResponse.blob();
+                result.blob = imageBlob;
+              } catch (blobError) {
+                console.error("Erro ao criar o Blob:", blobError);
+                return { error: "Erro ao criar o Blob" };
+              }
             }
           }
         });
@@ -632,7 +654,7 @@ async function extractMetadata(url, maxRetries = 5) {
         await ogs({
           url: url,
           fetchOptions: { headers: { "user-agent": userAgent } },
-        }).then((data) => {
+        }).then(async(data) => {
           const { error, result: ogsResult } = data;
           if (!error && ogsResult) {
             // Adicione os campos do OGS aos resultados
@@ -640,6 +662,23 @@ async function extractMetadata(url, maxRetries = 5) {
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
+
+              // Converte a imagem para Blob
+              const imageResponse = await fetch(result.imagePath);
+              
+
+              if (!imageResponse.ok) {
+                console.error("Erro ao obter a imagem:", imageResponse.status);
+                return { error: "Erro ao obter a imagem" };
+              }
+
+              try {
+                const imageBlob = await imageResponse.blob();
+                result.blob = imageBlob;
+              } catch (blobError) {
+                console.error("Erro ao criar o Blob:", blobError);
+                return { error: "Erro ao criar o Blob" };
+              }
             }
           }
         });
@@ -715,22 +754,18 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           .trim();
         if (oldPrice) {
           result["price-original"] = formatPrice(oldPrice);
-          
         }
-        const modifiedUrl = finalUrl
+        const modifiedUrl = finalUrl;
         result.buyLink = url;
-
-
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
 
-        if(amazon){
-
-        const parsedUrl = new URL(finalUrl);
-        parsedUrl.searchParams.set("tag", amazon);
-        const modifiedUrl = parsedUrl.href;
-        result.buyLink = modifiedUrl || finalUrl;
-      }
+        if (amazon) {
+          const parsedUrl = new URL(finalUrl);
+          parsedUrl.searchParams.set("tag", amazon);
+          const modifiedUrl = parsedUrl.href;
+          result.buyLink = modifiedUrl || finalUrl;
+        }
 
         $("h1#title").each((i, el) => {
           result.title = $(el).text().trim();
@@ -748,13 +783,15 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         const conditionElement = $("span.best-offer-name");
         result.conditionPayment = conditionElement.text().trim();
 
-        const oneTimePaymentElement = $("#oneTimePaymentPrice_feature_div span.a-size-base.a-color-secondary");
+        const oneTimePaymentElement = $(
+          "#oneTimePaymentPrice_feature_div span.a-size-base.a-color-secondary"
+        );
         if (oneTimePaymentElement.length > 0) {
           const oneTimePaymentText = oneTimePaymentElement.text().trim();
-          result.conditionPayment = result.conditionPayment ? `${oneTimePaymentText} ${result.conditionPayment}` : oneTimePaymentText;
-      }
-      
-
+          result.conditionPayment = result.conditionPayment
+            ? `${oneTimePaymentText} ${result.conditionPayment}`
+            : oneTimePaymentText;
+        }
 
         const descriptionElement = $("#feature-bullets .a-list-item").first();
         result.description = descriptionElement.text().trim();
@@ -776,19 +813,21 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           result.currentPrice = formatPrice(firstPrice);
         }
 
-
         const recurrencePriceText = $("span#sns-base-price")
-        .first()
-        .text()
-        .trim();
-      
-      // Fazer split por "R$" e pegar o segundo elemento (o primeiro valor após "R$")
-      const recurrencePriceArray = recurrencePriceText.split("R$");
-      const firstRecurrencePrice = recurrencePriceArray.length > 1 ? `R$${recurrencePriceArray[1]}` : null;
-      
-      if (firstRecurrencePrice) {
-        result.recurrencePrice = formatPrice(firstRecurrencePrice);
-      }
+          .first()
+          .text()
+          .trim();
+
+        // Fazer split por "R$" e pegar o segundo elemento (o primeiro valor após "R$")
+        const recurrencePriceArray = recurrencePriceText.split("R$");
+        const firstRecurrencePrice =
+          recurrencePriceArray.length > 1
+            ? `R$${recurrencePriceArray[1]}`
+            : null;
+
+        if (firstRecurrencePrice) {
+          result.recurrencePrice = formatPrice(firstRecurrencePrice);
+        }
 
         const codeElement = $(
           "th.a-color-secondary.a-size-base.prodDetSectionEntry:contains('ASIN')"
@@ -844,32 +883,36 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
       } else if (/magazineluiza|magalu|magazinevoce/.test(finalUrl)) {
         let modifiedUrl;
 
-        if(magazine) {
-        if (finalUrl.includes("magazineluiza.com.br")) {
-          modifiedUrl = finalUrl.replace(
-            "magazineluiza.com.br",
-            `magazinevoce.com.br/${magazine}`
-          );
-        } else {
-          modifiedUrl = finalUrl.replace(
-            /https:\/\/www\.magazinevoce\.com\.br\/magazine([^/]+)/,
-            `https://www.magazinevoce.com.br/${magazine}`
-          );
+        if (magazine) {
+          if (finalUrl.includes("magazineluiza.com.br")) {
+            modifiedUrl = finalUrl.replace(
+              "magazineluiza.com.br",
+              `magazinevoce.com.br/${magazine}`
+            );
+          } else {
+            modifiedUrl = finalUrl.replace(
+              /https:\/\/www\.magazinevoce\.com\.br\/magazine([^/]+)/,
+              `https://www.magazinevoce.com.br/${magazine}`
+            );
+          }
         }
-      }
 
         result.buyLink = modifiedUrl || finalUrl;
         result.website = "Magazine Luiza";
         result.title = $('h1[data-testid="heading-product-title"]')
           .text()
           .trim();
-        let currentPriceMagalu = $('p[data-testid="price-value"]').text().trim();
+        let currentPriceMagalu = $('p[data-testid="price-value"]')
+          .text()
+          .trim();
 
-        result.currentPrice = formatPrice(currentPriceMagalu)
+        result.currentPrice = formatPrice(currentPriceMagalu);
 
-        let originalPriceMagalu = $('p[data-testid="price-original"]').text().trim();
+        let originalPriceMagalu = $('p[data-testid="price-original"]')
+          .text()
+          .trim();
 
-        result.originalPrice =  formatPrice(originalPriceMagalu)
+        result.originalPrice = formatPrice(originalPriceMagalu);
 
         result.imagePath = $(
           'img[data-testid="image-selected-thumbnail"]'
@@ -919,19 +962,39 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         console.log(
           'O URL fornecido não contém "amzn" ou "amazon" ou "magazineluiza" ou "magazinevoce" ou mercadolivre'
         );
+        
         await ogs({
           url: url,
           fetchOptions: { headers: { "user-agent": userAgent } },
-        }).then((data) => {
+        }).then(async (data) => {
           const { error, result: ogsResult } = data;
           if (!error && ogsResult) {
-            result.title = ogsResult.title
-            result.productName = ogsResult.title
+            result.title = ogsResult.title;
+            result.productName = ogsResult.title;
             // Adicione os campos do OGS aos resultados
             ogsResult.ogImage = ogsResult.ogImage || [];
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
+
+              // Converte a imagem para Blob
+              const imageResponse = await fetch(result.imagePath);
+              
+
+              if (!imageResponse.ok) {
+                console.error("Erro ao obter a imagem:", imageResponse.status);
+                return { error: "Erro ao obter a imagem" };
+              }
+
+              try {
+                const imageBlob = await imageResponse.blob();
+                result.blob = imageBlob;
+              } catch (blobError) {
+                console.error("Erro ao criar o Blob:", blobError);
+                return { error: "Erro ao criar o Blob" };
+              }
+
+              
             }
           }
         });
@@ -944,7 +1007,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         await ogs({
           url: url,
           fetchOptions: { headers: { "user-agent": userAgent } },
-        }).then((data) => {
+        }).then(async (data) => {
           const { error, result: ogsResult } = data;
           if (!error && ogsResult) {
             // Adicione os campos do OGS aos resultados
@@ -952,6 +1015,24 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
+
+              // Converte a imagem para Blob
+              const imageResponse = await fetch(result.imagePath);
+              
+
+              if (!imageResponse.ok) {
+                console.error("Erro ao obter a imagem:", imageResponse.status);
+                return { error: "Erro ao obter a imagem" };
+              }
+
+              try {
+                const imageBlob = await imageResponse.blob();
+                result.blob = imageBlob;
+              } catch (blobError) {
+                console.error("Erro ao criar o Blob:", blobError);
+                return { error: "Erro ao criar o Blob" };
+              }
+
             }
           }
         });
