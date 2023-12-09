@@ -6,4 +6,4 @@ router.get("/status", async (req, res) => {
   res.status(200).json("Online")
 })
 
-export default router
+module.exports = router;
