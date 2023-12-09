@@ -6,339 +6,339 @@ const axios = require("axios");
 const ogs = require("open-graph-scraper");
 const amazonPaapi = require('amazon-paapi');
 
-const productsFilePath = path.join(__dirname, "../data/products.json");
-const prisma = new PrismaClient();
+// const productsFilePath = path.join(__dirname, "../data/products.json");
+// const prisma = new PrismaClient();
 
-const getProducts = async () => {
-  try {
-    const products = await prisma.products.findMany();
-    return products;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
+// const getProducts = async () => {
+//   try {
+//     const products = await prisma.products.findMany();
+//     return products;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 
-const getProductGroups = async () => {
-  try {
-    const productGroups = await prisma.productGroup.findMany();
-    return productGroups;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
+// const getProductGroups = async () => {
+//   try {
+//     const productGroups = await prisma.productGroup.findMany();
+//     return productGroups;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 
-const getProductsByGroup = async (groupId) => {
-  try {
-    const productsInGroup = await prisma.productGroupAssociation.findMany({
-      where: { groupId: parseInt(groupId) },
-      include: { product: true },
-    });
+// const getProductsByGroup = async (groupId) => {
+//   try {
+//     const productsInGroup = await prisma.productGroupAssociation.findMany({
+//       where: { groupId: parseInt(groupId) },
+//       include: { product: true },
+//     });
 
-    return productsInGroup.map((item) => item.product);
-  } catch (error) {
-    throw new Error("Erro ao buscar produtos do grupo: " + error.message);
-  }
-};
+//     return productsInGroup.map((item) => item.product);
+//   } catch (error) {
+//     throw new Error("Erro ao buscar produtos do grupo: " + error.message);
+//   }
+// };
 
-const getProductsPaginated = async (page = 1, pageSize = 5) => {
-  try {
-    if (page === 0) {
-      page = 1;
-    }
-    const startIndex = (page - 1) * pageSize;
-    const products = await prisma.products.findMany({
-      skip: startIndex,
-      take: pageSize,
-      orderBy: {
-        id: "desc",
-      },
-    });
-    return products;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
+// const getProductsPaginated = async (page = 1, pageSize = 5) => {
+//   try {
+//     if (page === 0) {
+//       page = 1;
+//     }
+//     const startIndex = (page - 1) * pageSize;
+//     const products = await prisma.products.findMany({
+//       skip: startIndex,
+//       take: pageSize,
+//       orderBy: {
+//         id: "desc",
+//       },
+//     });
+//     return products;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 
-const getProductById = (productId) => {
-  return getProducts()
-    .then((allProducts) =>
-      allProducts.find((product) => product.id === parseInt(productId))
-    )
-    .catch((error) => {
-      throw new Error(error.message).status(500);
-    });
-};
+// const getProductById = (productId) => {
+//   return getProducts()
+//     .then((allProducts) =>
+//       allProducts.find((product) => product.id === parseInt(productId))
+//     )
+//     .catch((error) => {
+//       throw new Error(error.message).status(500);
+//     });
+// };
 
-const getProductByName = (productName) => {
-  return getProducts()
-    .then((allProducts) => {
-      const filteredProducts = allProducts.filter((product) => {
-        return product.title.toLowerCase().includes(productName.toLowerCase());
-      });
-      return filteredProducts;
-    })
-    .catch((error) => {
-      throw new Error(error.message);
-    });
-};
+// const getProductByName = (productName) => {
+//   return getProducts()
+//     .then((allProducts) => {
+//       const filteredProducts = allProducts.filter((product) => {
+//         return product.title.toLowerCase().includes(productName.toLowerCase());
+//       });
+//       return filteredProducts;
+//     })
+//     .catch((error) => {
+//       throw new Error(error.message);
+//     });
+// };
 
-const updateProduct = (productId, updateData) => {
-  return getProducts()
-    .then((productsData) => {
-      const productIndex = productsData.findIndex(
-        (product) => product.id === parseInt(productId)
-      );
+// const updateProduct = (productId, updateData) => {
+//   return getProducts()
+//     .then((productsData) => {
+//       const productIndex = productsData.findIndex(
+//         (product) => product.id === parseInt(productId)
+//       );
 
-      if (productIndex !== -1) {
-        const existingProduct = productsData[productIndex];
+//       if (productIndex !== -1) {
+//         const existingProduct = productsData[productIndex];
 
-        if (updateData.title) {
-          existingProduct.title = updateData.title;
-        }
-        if (updateData.price) {
-          existingProduct.currentPrice = updateData.price;
-        }
-        if (updateData.description) {
-          existingProduct.description = updateData.description;
-        }
+//         if (updateData.title) {
+//           existingProduct.title = updateData.title;
+//         }
+//         if (updateData.price) {
+//           existingProduct.currentPrice = updateData.price;
+//         }
+//         if (updateData.description) {
+//           existingProduct.description = updateData.description;
+//         }
 
-        productsData[productIndex] = existingProduct;
+//         productsData[productIndex] = existingProduct;
 
-        return fs
-          .writeFile(
-            productsFilePath,
-            JSON.stringify(productsData, null, 2),
-            "utf-8"
-          )
-          .then(() => {
-            return existingProduct;
-          })
-          .catch((error) => {
-            throw new Error("Erro ao atualizar o produto: " + error.message);
-          });
-      } else {
-        throw new Error("Produto não encontrado");
-      }
-    })
-    .catch((error) => {
-      throw new Error("Erro ao buscar produtos: " + error.message);
-    });
-};
+//         return fs
+//           .writeFile(
+//             productsFilePath,
+//             JSON.stringify(productsData, null, 2),
+//             "utf-8"
+//           )
+//           .then(() => {
+//             return existingProduct;
+//           })
+//           .catch((error) => {
+//             throw new Error("Erro ao atualizar o produto: " + error.message);
+//           });
+//       } else {
+//         throw new Error("Produto não encontrado");
+//       }
+//     })
+//     .catch((error) => {
+//       throw new Error("Erro ao buscar produtos: " + error.message);
+//     });
+// };
 
-const createProductGroup = async (groupData, productIds) => {
-  await prisma.$connect();
+// const createProductGroup = async (groupData, productIds) => {
+//   await prisma.$connect();
 
-  try {
-    let newGroup;
+//   try {
+//     let newGroup;
 
-    if (productIds && productIds.length > 0) {
-      newGroup = await prisma.productGroup.create({
-        data: {
-          ...groupData,
-          ProductGroupAssociation: {
-            create: productIds.map((productId) => ({
-              product: { connect: { id: parseInt(productId) } },
-            })),
-          },
-        },
-      });
-    } else {
-      // Se não houver IDs de produtos, criar apenas o grupo
-      newGroup = await prisma.productGroup.create({
-        data: groupData,
-      });
-    }
+//     if (productIds && productIds.length > 0) {
+//       newGroup = await prisma.productGroup.create({
+//         data: {
+//           ...groupData,
+//           ProductGroupAssociation: {
+//             create: productIds.map((productId) => ({
+//               product: { connect: { id: parseInt(productId) } },
+//             })),
+//           },
+//         },
+//       });
+//     } else {
+//       // Se não houver IDs de produtos, criar apenas o grupo
+//       newGroup = await prisma.productGroup.create({
+//         data: groupData,
+//       });
+//     }
 
-    return newGroup;
-  } catch (error) {
-    throw new Error("Erro ao criar o grupo: " + error.message);
-  } finally {
-    // Fecha a conexão após a conclusão
-    await prisma.$disconnect();
-  }
-};
+//     return newGroup;
+//   } catch (error) {
+//     throw new Error("Erro ao criar o grupo: " + error.message);
+//   } finally {
+//     // Fecha a conexão após a conclusão
+//     await prisma.$disconnect();
+//   }
+// };
 
-const addProductToGroup = async (productId, groupId) => {
-  await prisma.$connect();
+// const addProductToGroup = async (productId, groupId) => {
+//   await prisma.$connect();
 
-  try {
-    // Verifica se o produto e o grupo existem
-    const product = await prisma.products.findUnique({
-      where: { id: parseInt(productId) },
-    });
+//   try {
+//     // Verifica se o produto e o grupo existem
+//     const product = await prisma.products.findUnique({
+//       where: { id: parseInt(productId) },
+//     });
 
-    const group = await prisma.productGroup.findUnique({
-      where: { id: parseInt(groupId) },
-    });
+//     const group = await prisma.productGroup.findUnique({
+//       where: { id: parseInt(groupId) },
+//     });
 
-    if (!product || !group) {
-      throw new Error("Produto ou grupo não encontrado");
-    }
+//     if (!product || !group) {
+//       throw new Error("Produto ou grupo não encontrado");
+//     }
 
-    // Adiciona o produto ao grupo na tabela de junção
-    const productGroupMembership = await prisma.ProductGroupAssociation.create({
-      data: {
-        productId: parseInt(productId),
-        groupId: parseInt(groupId),
-      },
-    });
+//     // Adiciona o produto ao grupo na tabela de junção
+//     const productGroupMembership = await prisma.ProductGroupAssociation.create({
+//       data: {
+//         productId: parseInt(productId),
+//         groupId: parseInt(groupId),
+//       },
+//     });
 
-    // Incrementa o contador de clicks do grupo
-    await prisma.productGroup.update({
-      where: { id: parseInt(groupId) },
-      data: {
-        clicks: {
-          increment: 1,
-        },
-      },
-    });
+//     // Incrementa o contador de clicks do grupo
+//     await prisma.productGroup.update({
+//       where: { id: parseInt(groupId) },
+//       data: {
+//         clicks: {
+//           increment: 1,
+//         },
+//       },
+//     });
 
-    return productGroupMembership;
-  } catch (error) {
-    throw new Error("Erro ao adicionar o produto ao grupo: " + error.message);
-  }
-};
+//     return productGroupMembership;
+//   } catch (error) {
+//     throw new Error("Erro ao adicionar o produto ao grupo: " + error.message);
+//   }
+// };
 
-const deleteProducts = async (productId) => {
-  await prisma.$connect();
-  try {
-    const product = await prisma.products.findUnique({
-      where: { id: parseInt(productId) },
-    });
+// const deleteProducts = async (productId) => {
+//   await prisma.$connect();
+//   try {
+//     const product = await prisma.products.findUnique({
+//       where: { id: parseInt(productId) },
+//     });
 
-    if (!product) {
-      throw new Error("Produto não encontrado");
-    }
+//     if (!product) {
+//       throw new Error("Produto não encontrado");
+//     }
 
-    const deletedProduct = await prisma.products.delete({
-      where: { id: parseInt(productId) },
-    });
-    console.log("Deletando produto com ID", productId);
+//     const deletedProduct = await prisma.products.delete({
+//       where: { id: parseInt(productId) },
+//     });
+//     console.log("Deletando produto com ID", productId);
 
-    return deletedProduct;
-  } catch (error) {
-    throw new Error("Erro ao deletar o produto: " + error.message);
-  }
-};
+//     return deletedProduct;
+//   } catch (error) {
+//     throw new Error("Erro ao deletar o produto: " + error.message);
+//   }
+// };
 
-const addProduct = async (newProductData) => {
-  await prisma.$connect();
-  try {
-    const newProduct = await prisma.products.create({
-      data: newProductData,
-    });
-    return newProduct;
-  } catch (error) {
-    throw new Error("Erro ao criar o produto: " + error.message);
-  }
-};
+// const addProduct = async (newProductData) => {
+//   await prisma.$connect();
+//   try {
+//     const newProduct = await prisma.products.create({
+//       data: newProductData,
+//     });
+//     return newProduct;
+//   } catch (error) {
+//     throw new Error("Erro ao criar o produto: " + error.message);
+//   }
+// };
 
-const applyDiscount = (productId, discount) => {
-  return getProducts()
-    .then((productsData) => {
-      if (discount >= 0 && discount <= 100) {
-        const productIndex = productsData.findIndex((product) => {
-          return product.id === parseInt(productId);
-        });
-        if (productIndex != -1) {
-          const existingProduct = productsData[productIndex];
-          const discountMultiplier = 1 - discount / 100;
-          existingProduct.currentPrice = Number(
-            (existingProduct.currentPrice * discountMultiplier).toFixed(2)
-          );
-          productsData[productIndex] = existingProduct;
+// const applyDiscount = (productId, discount) => {
+//   return getProducts()
+//     .then((productsData) => {
+//       if (discount >= 0 && discount <= 100) {
+//         const productIndex = productsData.findIndex((product) => {
+//           return product.id === parseInt(productId);
+//         });
+//         if (productIndex != -1) {
+//           const existingProduct = productsData[productIndex];
+//           const discountMultiplier = 1 - discount / 100;
+//           existingProduct.currentPrice = Number(
+//             (existingProduct.currentPrice * discountMultiplier).toFixed(2)
+//           );
+//           productsData[productIndex] = existingProduct;
 
-          return fs
-            .writeFile(
-              productsFilePath,
-              JSON.stringify(productsData, null, 2),
-              "utf-8"
-            )
-            .then(() => {
-              return existingProduct;
-            })
-            .catch((error) => {
-              throw new Error(
-                "Erro ao aplicar o desconto no produto: " + error.message
-              );
-            });
-        } else {
-          throw new Error("Produto não encontrado");
-        }
-      }
-    })
-    .catch((error) => {
-      throw new Error("Erro ao buscar produtos: " + error.message);
-    });
-};
+//           return fs
+//             .writeFile(
+//               productsFilePath,
+//               JSON.stringify(productsData, null, 2),
+//               "utf-8"
+//             )
+//             .then(() => {
+//               return existingProduct;
+//             })
+//             .catch((error) => {
+//               throw new Error(
+//                 "Erro ao aplicar o desconto no produto: " + error.message
+//               );
+//             });
+//         } else {
+//           throw new Error("Produto não encontrado");
+//         }
+//       }
+//     })
+//     .catch((error) => {
+//       throw new Error("Erro ao buscar produtos: " + error.message);
+//     });
+// };
 
-const updateProductClick = async (productId) => {
-  await prisma.$connect();
-  try {
-    const product = await prisma.products.findUnique({
-      where: { id: parseInt(productId) },
-    });
+// const updateProductClick = async (productId) => {
+//   await prisma.$connect();
+//   try {
+//     const product = await prisma.products.findUnique({
+//       where: { id: parseInt(productId) },
+//     });
 
-    if (!product) {
-      throw new Error("Produto não encontrado");
-    }
+//     if (!product) {
+//       throw new Error("Produto não encontrado");
+//     }
 
-    const updatedProduct = await prisma.products.update({
-      where: { id: parseInt(productId) },
-      data: {
-        clicks: product.clicks + 1, // Increment clicks by 1
-      },
-    });
+//     const updatedProduct = await prisma.products.update({
+//       where: { id: parseInt(productId) },
+//       data: {
+//         clicks: product.clicks + 1, // Increment clicks by 1
+//       },
+//     });
 
-    return updatedProduct;
-  } catch (error) {
-    throw new Error("Erro ao buscar ou atualizar o produto: " + error.message);
-  }
-};
+//     return updatedProduct;
+//   } catch (error) {
+//     throw new Error("Erro ao buscar ou atualizar o produto: " + error.message);
+//   }
+// };
 
-const updateProductRating = (productId, rating) => {
-  if (rating && rating <= 5) {
-    return getProducts()
-      .then((productsData) => {
-        const productIndex = productsData.findIndex((product) => {
-          return product.id === parseInt(productId);
-        });
-        if (productIndex != -1) {
-          const existingProduct = productsData[productIndex];
-          const { rate, count } = existingProduct.rating;
+// const updateProductRating = (productId, rating) => {
+//   if (rating && rating <= 5) {
+//     return getProducts()
+//       .then((productsData) => {
+//         const productIndex = productsData.findIndex((product) => {
+//           return product.id === parseInt(productId);
+//         });
+//         if (productIndex != -1) {
+//           const existingProduct = productsData[productIndex];
+//           const { rate, count } = existingProduct.rating;
 
-          existingProduct.rating.rate = (
-            (rate * count + rating) /
-            (count + 1)
-          ).toFixed(2);
-          existingProduct.rating.count += 1;
-          productsData[productIndex] = existingProduct;
+//           existingProduct.rating.rate = (
+//             (rate * count + rating) /
+//             (count + 1)
+//           ).toFixed(2);
+//           existingProduct.rating.count += 1;
+//           productsData[productIndex] = existingProduct;
 
-          return fs
-            .writeFile(
-              productsFilePath,
-              JSON.stringify(productsData, null, 2),
-              "utf-8"
-            )
-            .then(() => {
-              return existingProduct;
-            })
-            .catch((error) => {
-              throw new Error(
-                "Erro ao aplicar o desconto no produto: " + error.message
-              );
-            });
-        } else {
-          throw new Error("Produto não encontrado");
-        }
-      })
-      .catch((error) => {
-        throw new Error("Erro ao buscar produtos: " + error.message);
-      });
-  } else {
-    throw new Error("Nota inválida");
-  }
-};
+//           return fs
+//             .writeFile(
+//               productsFilePath,
+//               JSON.stringify(productsData, null, 2),
+//               "utf-8"
+//             )
+//             .then(() => {
+//               return existingProduct;
+//             })
+//             .catch((error) => {
+//               throw new Error(
+//                 "Erro ao aplicar o desconto no produto: " + error.message
+//               );
+//             });
+//         } else {
+//           throw new Error("Produto não encontrado");
+//         }
+//       })
+//       .catch((error) => {
+//         throw new Error("Erro ao buscar produtos: " + error.message);
+//       });
+//   } else {
+//     throw new Error("Nota inválida");
+//   }
+// };
 
 const formatPrice = (currentPrice) => {
   if (typeof currentPrice === "string") {
@@ -1034,18 +1034,18 @@ module.exports = {
   extractMetadata,
   extractMetadata2,
   extractAmazonAPI,
-  getProductGroups,
-  getProductsByGroup,
-  updateProductClick,
-  getProductsPaginated,
-  addProduct,
-  addProductToGroup,
-  createProductGroup,
-  getProducts,
-  getProductById,
-  updateProduct,
-  deleteProducts,
-  getProductByName,
-  applyDiscount,
-  updateProductRating,
+  // getProductGroups,
+  // getProductsByGroup,
+  // updateProductClick,
+  // getProductsPaginated,
+  // addProduct,
+  // addProductToGroup,
+  // createProductGroup,
+  // getProducts,
+  // getProductById,
+  // updateProduct,
+  // deleteProducts,
+  // getProductByName,
+  // applyDiscount,
+  // updateProductRating,
 };
