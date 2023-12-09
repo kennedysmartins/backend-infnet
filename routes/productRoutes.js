@@ -156,6 +156,19 @@ router.post('/extractor2', (request, response) => {
     console.log('Rota extractMetadata')
 })
 
+router.post('/extractorAmazon', (request, response) => {
+    const {url, amazon, accesskey, secretkey, asin} = request.body
+    productController.extractAmazonAPI(accesskey, secretkey, amazon, asin)
+    .then(product => {
+        if(product) {
+            response.status(200).json(product)
+        } else {
+            response.status(404).send()
+
+        }
+    })
+    console.log('Rota extractMetadata')
+})
 
 
 router.delete('/:id', (request, response) => {

@@ -4,6 +4,7 @@ const cheerio = require("cheerio");
 const { PrismaClient } = require("@prisma/client");
 const axios = require("axios");
 const ogs = require("open-graph-scraper");
+const amazonPaapi = require('amazon-paapi');
 
 const productsFilePath = path.join(__dirname, "../data/products.json");
 const prisma = new PrismaClient();
@@ -954,7 +955,8 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         });
       }
 
-      if (result.website != "Mercado Livre") {
+      if (result.website != "Mercado Livre" || result.website != "Amazon") {
+        console.log("OGS disponível")
         const userAgent =
           "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
 
@@ -995,9 +997,43 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
   }
 }
 
+const extractAmazonAPI = (AccessKey, SecretKey, PartnerTag, ASIN) => {
+  const commonParameters = {
+  AccessKey: AccessKey,
+  SecretKey: SecretKey,
+  PartnerTag: PartnerTag, // yourtag-20
+  PartnerType: 'Associates', // Default value is Associates.
+  Marketplace: 'www.amazon.com.br', // Default value is US. Note: Host and Region are predetermined based on the marketplace value. There is no need for you to add Host and Region as soon as you specify the correct Marketplace value. If your region is not US or .com, please make sure you add the correct Marketplace value.
+};
+
+const requestParameters = {
+  ItemIds: [ASIN],
+  ItemIdType: 'ASIN',
+  Condition: 'Any',
+  Resources: [
+    'Images.Primary.Medium',
+    'ItemInfo.Title',
+    'Offers.Listings.Price',
+  ],
+};
+
+amazonPaapi
+  .GetItems(commonParameters, requestParameters)
+  .then((data) => {
+    // do something with the success response.
+    console.log(data);
+  })
+  .catch((error) => {
+    // catch an error.
+    console.log(error);
+  });
+
+}
+
 module.exports = {
   extractMetadata,
   extractMetadata2,
+  extractAmazonAPI,
   getProductGroups,
   getProductsByGroup,
   updateProductClick,
