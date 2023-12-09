@@ -140,21 +140,26 @@ router.post('/extractor', (request, response) => {
     console.log('Rota extractMetadata')
 })
 
-router.post('/extractor2', (request, response) => {
-    const url = request.body.url
-    const amazon = request.body.amazon
-    const magazine = request.body.magazine
-    productController.extractMetadata2(url, amazon, magazine)
-    .then(product => {
-        if(product) {
-            response.status(200).json(product)
-        } else {
-            response.status(404).send()
+router.post('/extractor2', async (request, response) => {
+    try {
+        const url = request.body.url;
+        const amazon = request.body.amazon;
+        const magazine = request.body.magazine;
 
+        const product = await productController.extractMetadata2(url, amazon, magazine);
+
+        if (product) {
+            response.status(200).json(product);
+        } else {
+            response.status(404).send();
         }
-    })
-    console.log('Rota extractMetadata')
-})
+        console.log('Rota extractMetadata');
+    } catch (error) {
+        console.error('Erro na rota extractMetadata:', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 router.post('/extractorAmazon', (request, response) => {
     const {url, amazon, accesskey, secretkey, asin} = request.body
