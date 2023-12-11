@@ -955,7 +955,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         });
       }
 
-      if (result.website != "Mercado Livre" || result.website != "Amazon") {
+      if (result.website != "Mercado Livre") {
         console.log("OGS disponível")
         const userAgent =
           "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
