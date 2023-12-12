@@ -364,6 +364,19 @@ const formatPrice = (currentPrice) => {
   return currentPrice;
 };
 
+async function downloadAndConvertToBase64(url) {
+  try {
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(response.data, 'binary');
+    const base64Image = imageBuffer.toString('base64');
+    return base64Image;
+  } catch (error) {
+    console.error('Erro ao baixar e converter a imagem:', error);
+    throw error;
+  }
+}
+
+
 async function extractMetadata(url, maxRetries = 5) {
   let retries = 0;
   while (retries < maxRetries) {
@@ -705,11 +718,13 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         )
           .text()
           .trim();
-        result.imagePath = $(
-          "div.ui-eshop-item__image_container.ui-eshop-item__image_container--row"
-        )
-          .find("img.ui-eshop-item__image")
-          .attr("src");
+
+          result.imagePath = $(
+            "div.ui-eshop-item__image_container.ui-eshop-item__image_container--row"
+            )
+            .find("img.ui-eshop-item__image")
+            .attr("src");
+            result.image64 = await downloadAndConvertToBase64(result.imagePath);
         const priceElement = $(
           "span.andes-money-amount.andes-money-amount--cents-superscript"
         ).first();
@@ -829,6 +844,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           });
 
           result.imagePath = imageUrl;
+          result.image64 = await downloadAndConvertToBase64(result.imagePath);
         }
 
         const breadcrumbsList = [];
@@ -888,7 +904,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         result.imagePath = $(
           'img[data-testid="image-selected-thumbnail"]'
         ).attr("src");
-
+        result.image64 = await downloadAndConvertToBase64(result.imagePath);
         const codeElement = $("span.sc-dcJsrY.daMqkh:contains('Código')")
           .text()
           .trim();
@@ -947,6 +963,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
+              result.image64 = await downloadAndConvertToBase64(result.imagePath);
 
             
               
@@ -971,6 +988,7 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
+              result.image64 = await downloadAndConvertToBase64(result.imagePath);
 
               
 
