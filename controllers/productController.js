@@ -367,9 +367,8 @@ const formatPrice = (currentPrice) => {
 async function downloadAndConvertToBase64(url) {
   try {
     const response = await axios.get(url, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(response.data, 'binary');
-    const base64Image = imageBuffer.toString('base64');
-    return base64Image;
+    const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    return blob;
   } catch (error) {
     console.error('Erro ao baixar e converter a imagem:', error);
     throw error;
