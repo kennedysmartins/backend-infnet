@@ -1,4 +1,4 @@
-const fs = require("fs").promises;
+const fs = require("fs");
 const path = require("path");
 const cheerio = require("cheerio");
 const { PrismaClient } = require("@prisma/client");
@@ -364,16 +364,32 @@ const formatPrice = (currentPrice) => {
   return currentPrice;
 };
 
-async function downloadAndConvertToBase64(url) {
-  try {
-    const response = await axios.get(url, { responseType: 'arraybuffer' });
-    const blob = new Blob([response.data], { type: response.headers['content-type'] });
-    return blob;
-  } catch (error) {
-    console.error('Erro ao baixar e converter a imagem:', error);
-    throw error;
-  }
-}
+// const writeFileAsync = promisify(fs.writeFile);
+
+const downloadImage = async (url, imageName) => {
+  const response = await axios({
+    method: 'GET',
+    url: url,
+    responseType: 'stream',
+  });
+
+  const writer = fs.createWriteStream(path.join(__dirname, `../public/${imageName}.jpg`));
+
+  return new Promise((resolve, reject) => {
+    response.data.pipe(writer);
+    let error = null;
+    writer.on('error', (err) => {
+      error = err;
+      writer.close();
+      reject(err);
+    });
+    writer.on('close', () => {
+      if (!error) {
+        resolve();
+      }
+    });
+  });
+};
 
 
 async function extractMetadata(url, maxRetries = 5) {
@@ -723,7 +739,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             )
             .find("img.ui-eshop-item__image")
             .attr("src");
-            result.image64 = await downloadAndConvertToBase64(result.imagePath);
+            if (result.imagePath) {
+            await downloadImage(result.imagePath, amazon)
+               
+          }
         const priceElement = $(
           "span.andes-money-amount.andes-money-amount--cents-superscript"
         ).first();
@@ -742,6 +761,9 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         }
         const modifiedUrl = finalUrl;
         result.buyLink = url;
+
+
+        
       } else if (/amzn|amazon/.test(finalUrl)) {
         result.website = "Amazon";
 
@@ -843,7 +865,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
           });
 
           result.imagePath = imageUrl;
-          result.image64 = await downloadAndConvertToBase64(result.imagePath);
+          if (result.imagePath) {
+            await downloadImage(result.imagePath, amazon)
+               
+          }
         }
 
         const breadcrumbsList = [];
@@ -903,7 +928,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         result.imagePath = $(
           'img[data-testid="image-selected-thumbnail"]'
         ).attr("src");
-        result.image64 = await downloadAndConvertToBase64(result.imagePath);
+        if (result.imagePath) {
+            await downloadImage(result.imagePath, amazon)
+               
+          }
         const codeElement = $("span.sc-dcJsrY.daMqkh:contains('Código')")
           .text()
           .trim();
@@ -962,7 +990,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
-              result.image64 = await downloadAndConvertToBase64(result.imagePath);
+              if (result.imagePath) {
+            await downloadImage(result.imagePath, amazon)
+               
+          }
 
             
               
@@ -987,7 +1018,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
               result.imagePath = ogsResult.ogImage[0].url;
-              result.image64 = await downloadAndConvertToBase64(result.imagePath);
+              if (result.imagePath) {
+            await downloadImage(result.imagePath, amazon)
+               
+          }
 
               
 

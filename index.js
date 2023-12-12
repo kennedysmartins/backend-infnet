@@ -18,6 +18,8 @@ app.use(redirectMiddleware);
 app.use(logMiddleware);
 app.use(rateLimit);
 
+app.use(express.static('public'));
+
 app.get('/', (request, response) => {
     response.send("Hello World");
 });
