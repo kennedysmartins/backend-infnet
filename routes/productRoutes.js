@@ -160,6 +160,26 @@ router.post('/extractor2', async (request, response) => {
     }
 });
 
+router.post('/extractorOG', async (request, response) => {
+    try {
+        const url = request.body.url;
+        const amazon = request.body.amazon;
+        const magazine = request.body.magazine;
+
+        const product = await productController.extractOG(url, amazon, magazine);
+
+        if (product) {
+            response.status(200).json(product);
+        } else {
+            response.status(404).send();
+        }
+        console.log('Rota extractOG');
+    } catch (error) {
+        console.error('Erro na rota extractOG:', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 router.post('/extractorAmazon', (request, response) => {
     const {url, amazon, accesskey, secretkey, asin} = request.body
