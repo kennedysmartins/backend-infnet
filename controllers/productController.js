@@ -652,7 +652,9 @@ async function extractMetadata(url, maxRetries = 5) {
             ogsResult.ogImage = ogsResult.ogImage || [];
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
-              result.imagePath = ogsResult.ogImage[0].url;
+              if(ogsResult.ogImage[0].url != "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png") {
+                result.imagePath = ogsResult.ogImage[0].url;
+              }
 
    
 
@@ -675,7 +677,9 @@ async function extractMetadata(url, maxRetries = 5) {
             ogsResult.ogImage = ogsResult.ogImage || [];
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
-              result.imagePath = ogsResult.ogImage[0].url;
+              if(ogsResult.ogImage[0].url != "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png") {
+                result.imagePath = ogsResult.ogImage[0].url;
+              }
 
               
             }
@@ -701,7 +705,37 @@ async function extractMetadata(url, maxRetries = 5) {
   }
 }
 
-async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
+async function extractOG(url, amazon, magazine) {
+  console.log("Extraindo OG")
+  let result = {}
+  const userAgent =
+          "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+
+        await ogs({
+          url: url,
+          fetchOptions: { headers: { "user-agent": userAgent } },
+        }).then(async (data) => {
+          const { error, result: ogsResult } = data;
+          if (!error && ogsResult) {
+            // Adicione os campos do OGS aos resultados
+            ogsResult.ogImage = ogsResult.ogImage || [];
+            if (ogsResult.ogImage.length > 0) {
+              // Use apenas a primeira imagem do OGS
+              if(ogsResult.ogImage[0].url != "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png") {
+                result.imagePath = ogsResult.ogImage[0].url;
+              }
+              if (result.imagePath) {
+                await downloadImage(result.imagePath, amazon)
+                console.log(result.imagePath)
+                return { result };
+               
+          }
+        }
+      }
+    })
+}
+
+async function extractMetadata2(url, amazon, magazine, maxRetries = 1) {
   let retries = 0;
   while (retries < maxRetries) {
     console.log("Extraindo");
@@ -710,9 +744,10 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
         maxRedirects: 5,
         headers: {
           "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
         },
       });
+      console.log('aqui')
 
       if (response.data.includes("errors/500")) {
         throw new Error("Erro 500 detectado na resposta");
@@ -721,6 +756,13 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
       const finalUrl = response.request.res.responseUrl || url;
       const $ = cheerio.load(response.data);
       const result = {};
+
+
+      console.log(finalUrl)
+
+      if (/casasbahia/.test(finalUrl)) {
+        return console.log("extra")
+      }
 
       if (/mercadolivre/.test(finalUrl)) {
         result.website = "Mercado Livre";
@@ -989,7 +1031,9 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             ogsResult.ogImage = ogsResult.ogImage || [];
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
-              result.imagePath = ogsResult.ogImage[0].url;
+                if(ogsResult.ogImage[0].url != "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png") {
+                result.imagePath = ogsResult.ogImage[0].url;
+              }
               if (result.imagePath) {
             await downloadImage(result.imagePath, amazon)
                
@@ -1017,7 +1061,9 @@ async function extractMetadata2(url, amazon, magazine, maxRetries = 5) {
             ogsResult.ogImage = ogsResult.ogImage || [];
             if (ogsResult.ogImage.length > 0) {
               // Use apenas a primeira imagem do OGS
-              result.imagePath = ogsResult.ogImage[0].url;
+              if(ogsResult.ogImage[0].url != "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png") {
+                result.imagePath = ogsResult.ogImage[0].url;
+              }
               if (result.imagePath) {
             await downloadImage(result.imagePath, amazon)
                
@@ -1085,6 +1131,7 @@ module.exports = {
   extractMetadata,
   extractMetadata2,
   extractAmazonAPI,
+  extractOG,
   // getProductGroups,
   // getProductsByGroup,
   // updateProductClick,
